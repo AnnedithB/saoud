@@ -1,20 +1,49 @@
 'use client';
 
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 
 const Spline = lazy(() => import('@splinetool/react-spline'));
 
 interface InteractiveRobotSplineProps {
   scene: string;
   className?: string;
+  /**
+   * Keep initial-load TBT low by not initializing Spline until the user interacts
+   * (mousemove/touchstart/keydown) or a fallback timeout fires.
+   */
+  deferUntilInteraction?: boolean;
+  /** Safety valve so Spline still appears even without interaction. */
+  maxDeferMs?: number;
 }
 
-export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSplineProps) {
+export function InteractiveRobotSpline({
+  scene,
+  className,
+  deferUntilInteraction = true,
+  maxDeferMs = 8000,
+}: InteractiveRobotSplineProps) {
   const [enabled, setEnabled] = useState(false);
+  const hostRef = useRef<HTMLDivElement | null>(null);
+
+  const shouldEnableOnIdle = useMemo(() => !deferUntilInteraction, [deferUntilInteraction]);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (media.matches) return;
+
+    let inView = true;
+    let observer: IntersectionObserver | null = null;
+    if (hostRef.current && 'IntersectionObserver' in window) {
+      inView = false;
+      observer = new IntersectionObserver(
+        entries => {
+          const entry = entries[0];
+          inView = Boolean(entry?.isIntersecting);
+        },
+        { root: null, threshold: 0.15 },
+      );
+      observer.observe(hostRef.current);
+    }
 
     let cancelled = false;
     const anyWindow = window as unknown as {
@@ -22,41 +51,53 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
       cancelIdleCallback?: (id: number) => void;
     };
 
-    const id =
-      anyWindow.requestIdleCallback?.(
-        () => {
-          if (!cancelled) setEnabled(true);
-        },
-        { timeout: 2000 },
-      ) ??
-      window.setTimeout(() => {
-        if (!cancelled) setEnabled(true);
-      }, 900);
+    const enable = () => {
+      if (cancelled) return;
+      if (!inView) return;
+      setEnabled(true);
+    };
+
+    const onInteract = () => enable();
+
+    const interactEvents: (keyof WindowEventMap)[] = ['mousemove', 'touchstart', 'keydown', 'wheel'];
+    if (deferUntilInteraction) {
+      for (const evt of interactEvents) {
+        window.addEventListener(evt, onInteract, { passive: true, once: true } as AddEventListenerOptions);
+      }
+    }
+
+    const idleId =
+      shouldEnableOnIdle
+        ? (anyWindow.requestIdleCallback?.(enable, { timeout: 2500 }) ??
+          window.setTimeout(enable, 1200))
+        : null;
+
+    const timeoutId =
+      maxDeferMs > 0 ? window.setTimeout(enable, maxDeferMs) : null;
 
     return () => {
       cancelled = true;
-      if (typeof id === 'number') {
-        anyWindow.cancelIdleCallback?.(id);
-        window.clearTimeout(id);
+      observer?.disconnect();
+      if (idleId != null && typeof idleId === 'number') {
+        anyWindow.cancelIdleCallback?.(idleId);
+        window.clearTimeout(idleId);
+      }
+      if (timeoutId != null) window.clearTimeout(timeoutId);
+      for (const evt of interactEvents) {
+        window.removeEventListener(evt, onInteract as EventListener);
       }
     };
-  }, [scene]);
+  }, [deferUntilInteraction, maxDeferMs, scene, shouldEnableOnIdle]);
 
   useEffect(() => {
     if (!enabled) return;
     void import('@splinetool/react-spline');
-    try {
-      const controller = new AbortController();
-      void fetch(scene, { signal: controller.signal, cache: 'force-cache' }).catch(() => {});
-      return () => controller.abort();
-    } catch {
-      return;
-    }
   }, [enabled, scene]);
 
   if (!enabled) {
     return (
       <div
+        ref={hostRef}
         className={`w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/5 ${className ?? ''}`}
       >
         <div className="h-full w-full bg-gradient-to-b from-transparent via-transparent to-background/30" />
@@ -68,6 +109,7 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
     <Suspense
       fallback={
         <div
+          ref={hostRef}
           className={`w-full h-full flex items-center justify-center bg-gray-900 text-white ${className ?? ''}`}
         >
           <svg
