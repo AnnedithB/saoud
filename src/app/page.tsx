@@ -7,6 +7,7 @@ import TeamMemberCard from '@/components/ui/team-member-card';
 import { BackgroundPathsOverlay } from '@/components/ui/background-paths';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/ui/reveal';
+import { ClientArcadeSlider, ClientProjectShowcase } from '@/components/sections/client-only';
 import {
   Card,
   CardContent,
@@ -23,7 +24,6 @@ import {
   Mail,
   Server,
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 
 const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
 
@@ -36,19 +36,6 @@ const NAV_ITEMS = [
 ] as const;
 
 const ROBOT_SCENE_URL = 'https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode';
-
-const ProjectShowcase = dynamic(
-  () => import('@/components/ui/project-showcase').then(m => m.ProjectShowcase),
-  {
-    ssr: false,
-    loading: () => <div className="h-[520px] w-full rounded-xl border border-border bg-muted/20" />,
-  },
-);
-
-const ArcadeSlider = dynamic(() => import('@/components/sections/arcade-slider').then(m => m.ArcadeSlider), {
-  ssr: false,
-  loading: () => <div className="h-[520px] w-full rounded-2xl border border-border bg-muted/20" />,
-});
 
 export default function Home() {
   return (
@@ -189,7 +176,7 @@ export default function Home() {
 
         <section id="skills" className="wrapper py-16">
           <Reveal>
-            <ProjectShowcase />
+            <ClientProjectShowcase />
           </Reveal>
         </section>
 
@@ -238,7 +225,7 @@ export default function Home() {
             </Reveal>
 
             <Reveal delay={0.06}>
-              <ArcadeSlider />
+              <ClientArcadeSlider />
             </Reveal>
           </div>
         </section>
