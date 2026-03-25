@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
+import Image from "next/image"
 
 interface SkillArea {
   title: string
@@ -171,17 +172,15 @@ export function ProjectShowcase() {
       >
         <div className="relative w-[280px] h-[180px] bg-secondary rounded-xl overflow-hidden">
           {hoveredSkill ? (
-            <img
+            <Image
               key={hoveredSkill.title}
               src={hoveredSkill.image || "/placeholder.svg"}
               alt={hoveredSkill.title}
-              loading="eager"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
-              style={{
-                opacity: 1,
-                scale: 1,
-              }}
+              fill
+              sizes="280px"
+              className="object-cover transition-all duration-500 ease-out"
+              quality={70}
+              fetchPriority="low"
             />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />

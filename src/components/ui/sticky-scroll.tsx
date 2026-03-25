@@ -1,5 +1,5 @@
-'use client';
 import React, { forwardRef } from 'react';
+import Image from 'next/image';
 
 type StickyScrollProps = React.HTMLAttributes<HTMLElement>;
 
@@ -87,12 +87,15 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
   }) {
     return (
       <div className="relative w-full h-full overflow-hidden rounded-md">
-        <img
+        <Image
           src={src}
           alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          className="absolute inset-0 transition-all duration-300 h-full w-full align-bottom object-cover"
+          fill
+          sizes="(min-width: 768px) 33vw, 100vw"
+          className="object-cover transition-all duration-300"
+          priority={Boolean(priority)}
+          fetchPriority={priority ? 'high' : 'auto'}
+          quality={70}
         />
       </div>
     );

@@ -1,12 +1,38 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+
+function useIsPageVisible() {
+  const [visible, setVisible] = React.useState(true);
+  React.useEffect(() => {
+    const onChange = () => setVisible(!document.hidden);
+    onChange();
+    document.addEventListener("visibilitychange", onChange);
+    return () => document.removeEventListener("visibilitychange", onChange);
+  }, []);
+  return visible;
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const onChange = () => setIsMobile(media.matches);
+    onChange();
+    media.addEventListener?.("change", onChange);
+    return () => media.removeEventListener?.("change", onChange);
+  }, []);
+  return isMobile;
+}
 
 function FloatingPaths({ position }: { position: number }) {
   // Keep this light: fewer paths + stable timings (no Math.random in render).
-  const PATH_COUNT = 18;
+  const reduceMotion = useReducedMotion();
+  const isPageVisible = useIsPageVisible();
+  const isMobile = useIsMobile();
+  const PATH_COUNT = isMobile ? 12 : 18;
 
   const paths = React.useMemo(
     () =>
@@ -30,27 +56,37 @@ function FloatingPaths({ position }: { position: number }) {
   return (
     <div className="absolute inset-0 pointer-events-none">
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none" aria-hidden="true">
-        {paths.map((path) => (
-          <motion.path
-            key={path.id}
-            d={path.d}
-            stroke="currentColor"
-            strokeWidth={path.width}
-            strokeOpacity={path.opacity}
-            // Performance: avoid pathLength animation (expensive). Just "flow" the dash offset + opacity.
-            initial={false}
-            animate={{
-              opacity: [path.opacity * 0.55, path.opacity, path.opacity * 0.55],
-              pathOffset: [0, 1],
-            }}
-            transition={{
-              duration: path.duration,
-              delay: path.delay,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {paths.map((path) =>
+          reduceMotion || !isPageVisible ? (
+            <path
+              key={path.id}
+              d={path.d}
+              stroke="currentColor"
+              strokeWidth={path.width}
+              strokeOpacity={path.opacity * 0.75}
+            />
+          ) : (
+            <motion.path
+              key={path.id}
+              d={path.d}
+              stroke="currentColor"
+              strokeWidth={path.width}
+              strokeOpacity={path.opacity}
+              // Performance: avoid pathLength animation (expensive). Just "flow" the dash offset + opacity.
+              initial={false}
+              animate={{
+                opacity: [path.opacity * 0.55, path.opacity, path.opacity * 0.55],
+                pathOffset: [0, 1],
+              }}
+              transition={{
+                duration: path.duration,
+                delay: path.delay,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            />
+          ),
+        )}
       </svg>
     </div>
   );

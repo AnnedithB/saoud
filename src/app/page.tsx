@@ -1,22 +1,10 @@
 import { HeroDitheringBackground } from '@/components/ui/hero-dithering-card';
 import { InteractiveRobotSpline } from '@/components/ui/interactive-3d-robot';
 import StickyScroll from '@/components/ui/sticky-scroll';
-import { ProjectShowcase } from '@/components/ui/project-showcase';
 import { GlowCard } from '@/components/ui/spotlight-card';
 import { TextScramble } from '@/components/ui/text-scramble';
 import TeamMemberCard from '@/components/ui/team-member-card';
 import { BackgroundPathsOverlay } from '@/components/ui/background-paths';
-import {
-  HoverSlider,
-  HoverSliderImageWrap,
-  HoverSliderSlide,
-  TextStaggerHover,
-} from '@/components/ui/animated-slideshow';
-import PixelFishing from '@/components/ui/pixel-fishing';
-import BugCatcher from '@/components/ui/bug-catcher';
-import HarvestRush from '@/components/ui/harvest-rush';
-import RiverDodge from '@/components/ui/river-dodge';
-import CampfireKeeper from '@/components/ui/campfire-keeper';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/ui/reveal';
 import {
@@ -35,6 +23,7 @@ import {
   Mail,
   Server,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
 
@@ -48,38 +37,18 @@ const NAV_ITEMS = [
 
 const ROBOT_SCENE_URL = 'https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode';
 
-function ArcadeStage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-[300px] sm:w-[360px] flex items-center justify-center">
-      <div className="w-full min-h-[360px] sm:min-h-[420px] flex items-center justify-center">
-        {children}
-      </div>
-    </div>
-  );
-}
+const ProjectShowcase = dynamic(
+  () => import('@/components/ui/project-showcase').then(m => m.ProjectShowcase),
+  {
+    ssr: false,
+    loading: () => <div className="h-[520px] w-full rounded-xl border border-border bg-muted/20" />,
+  },
+);
 
-const ARCADE_SLIDES = [
-  {
-    id: 'slide-1',
-    title: 'Pixel Fishing',
-  },
-  {
-    id: 'slide-2',
-    title: 'Bug Catcher',
-  },
-  {
-    id: 'slide-3',
-    title: 'Harvest Rush',
-  },
-  {
-    id: 'slide-4',
-    title: 'River Dodge',
-  },
-  {
-    id: 'slide-5',
-    title: 'Campfire Keeper',
-  },
-] as const;
+const ArcadeSlider = dynamic(() => import('@/components/sections/arcade-slider').then(m => m.ArcadeSlider), {
+  ssr: false,
+  loading: () => <div className="h-[520px] w-full rounded-2xl border border-border bg-muted/20" />,
+});
 
 export default function Home() {
   return (
@@ -269,49 +238,7 @@ export default function Home() {
             </Reveal>
 
             <Reveal delay={0.06}>
-              <HoverSlider className="w-full place-content-center rounded-2xl border border-border bg-[#faf9f5] p-6 text-[#3d3929] md:px-12">
-              <div className="flex flex-wrap items-center justify-evenly gap-6 md:gap-12">
-                <div className="flex flex-col space-y-2 md:space-y-4">
-                  {ARCADE_SLIDES.map((slide, index) => (
-                    <TextStaggerHover
-                      key={slide.id}
-                      index={index}
-                      className="cursor-pointer text-3xl font-bold uppercase tracking-tighter sm:text-4xl"
-                      text={slide.title}
-                    />
-                  ))}
-                </div>
-                <HoverSliderImageWrap className="w-[300px] sm:w-[360px]">
-                  <HoverSliderSlide index={0} className="size-full" unmountOnExit>
-                    <ArcadeStage>
-                      <div className="w-full h-full rounded-xl overflow-hidden">
-                        <PixelFishing embedded />
-                      </div>
-                    </ArcadeStage>
-                  </HoverSliderSlide>
-                  <HoverSliderSlide index={1} className="size-full" unmountOnExit>
-                    <ArcadeStage>
-                      <BugCatcher />
-                    </ArcadeStage>
-                  </HoverSliderSlide>
-                  <HoverSliderSlide index={2} className="size-full" unmountOnExit>
-                    <ArcadeStage>
-                      <HarvestRush />
-                    </ArcadeStage>
-                  </HoverSliderSlide>
-                  <HoverSliderSlide index={3} className="size-full" unmountOnExit>
-                    <ArcadeStage>
-                      <RiverDodge />
-                    </ArcadeStage>
-                  </HoverSliderSlide>
-                  <HoverSliderSlide index={4} className="size-full" unmountOnExit>
-                    <ArcadeStage>
-                      <CampfireKeeper />
-                    </ArcadeStage>
-                  </HoverSliderSlide>
-                </HoverSliderImageWrap>
-              </div>
-              </HoverSlider>
+              <ArcadeSlider />
             </Reveal>
           </div>
         </section>
