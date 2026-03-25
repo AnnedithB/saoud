@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
 const Spline = lazy(() => import('@splinetool/react-spline'));
 
@@ -10,20 +10,59 @@ interface InteractiveRobotSplineProps {
 }
 
 export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSplineProps) {
-  // Start downloading both the Spline runtime chunk + the scene ASAP.
-  // This doesn't change visuals, it just warms caches for first render.
-  useEffect(() => {
-    void import('@splinetool/react-spline');
+  const [enabled, setEnabled] = useState(false);
 
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (media.matches) return;
+
+    let cancelled = false;
+    const anyWindow = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    const id =
+      anyWindow.requestIdleCallback?.(
+        () => {
+          if (!cancelled) setEnabled(true);
+        },
+        { timeout: 2000 },
+      ) ??
+      window.setTimeout(() => {
+        if (!cancelled) setEnabled(true);
+      }, 900);
+
+    return () => {
+      cancelled = true;
+      if (typeof id === 'number') {
+        anyWindow.cancelIdleCallback?.(id);
+        window.clearTimeout(id);
+      }
+    };
+  }, [scene]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    void import('@splinetool/react-spline');
     try {
       const controller = new AbortController();
-      // Low-priority warmup fetch; safe to ignore failures.
       void fetch(scene, { signal: controller.signal, cache: 'force-cache' }).catch(() => {});
       return () => controller.abort();
     } catch {
       return;
     }
-  }, [scene]);
+  }, [enabled, scene]);
+
+  if (!enabled) {
+    return (
+      <div
+        className={`w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/5 ${className ?? ''}`}
+      >
+        <div className="h-full w-full bg-gradient-to-b from-transparent via-transparent to-background/30" />
+      </div>
+    );
+  }
 
   return (
     <Suspense

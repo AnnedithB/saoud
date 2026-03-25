@@ -1,11 +1,23 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import React, { lazy, Suspense, useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 const Dithering = lazy(() =>
   import("@paper-design/shaders-react").then(mod => ({ default: mod.Dithering })),
 );
+
+function usePrefersReducedMotion() {
+  const [prefers, setPrefers] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setPrefers(media.matches);
+    onChange();
+    media.addEventListener?.("change", onChange);
+    return () => media.removeEventListener?.("change", onChange);
+  }, []);
+  return prefers;
+}
 
 type HeroDitheringBackgroundProps = {
   className?: string;
@@ -17,6 +29,10 @@ type HeroDitheringBackgroundProps = {
   speed?: number;
   /** Shader speed when hovered. */
   hoverSpeed?: number;
+  /** Defer shader load until idle (recommended for hero). */
+  defer?: boolean;
+  /** Disable shader on small screens (recommended). */
+  disableOnMobile?: boolean;
 };
 
 export function HeroDitheringBackground({
@@ -25,8 +41,53 @@ export function HeroDitheringBackground({
   opacity = 0.35,
   speed = 0.12,
   hoverSpeed = 0.35,
+  defer = true,
+  disableOnMobile = true,
 }: HeroDitheringBackgroundProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isReady, setIsReady] = useState(!defer);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (!disableOnMobile) return;
+    const media = window.matchMedia("(max-width: 767px)");
+    const onChange = () => setIsMobile(media.matches);
+    onChange();
+    media.addEventListener?.("change", onChange);
+    return () => media.removeEventListener?.("change", onChange);
+  }, [disableOnMobile]);
+
+  useEffect(() => {
+    if (!defer) return;
+    if (prefersReducedMotion) return;
+    if (disableOnMobile && isMobile) return;
+
+    let cancelled = false;
+    const anyWindow = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    const id =
+      anyWindow.requestIdleCallback?.(
+        () => {
+          if (!cancelled) setIsReady(true);
+        },
+        { timeout: 1200 },
+      ) ??
+      window.setTimeout(() => {
+        if (!cancelled) setIsReady(true);
+      }, 450);
+
+    return () => {
+      cancelled = true;
+      if (typeof id === "number") {
+        anyWindow.cancelIdleCallback?.(id);
+        window.clearTimeout(id);
+      }
+    };
+  }, [defer, disableOnMobile, isMobile, prefersReducedMotion]);
 
   const layerStyle = useMemo(
     () => ({
@@ -41,22 +102,25 @@ export function HeroDitheringBackground({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
-        <div
-          className="absolute inset-0 z-0 pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-          style={layerStyle}
-        >
-          <Dithering
-            colorBack="#00000000"
-            colorFront={colorFront}
-            shape="warp"
-            type="4x4"
-            speed={isHovered ? hoverSpeed : speed}
-            className="size-full"
-            minPixelRatio={1}
-          />
-        </div>
-      </Suspense>
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-fuchsia-500/10" />
+      {!prefersReducedMotion && !(disableOnMobile && isMobile) && isReady ? (
+        <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
+          <div
+            className="absolute inset-0 z-0 pointer-events-none mix-blend-multiply dark:mix-blend-screen"
+            style={layerStyle}
+          >
+            <Dithering
+              colorBack="#00000000"
+              colorFront={colorFront}
+              shape="warp"
+              type="4x4"
+              speed={isHovered ? hoverSpeed : speed}
+              className="size-full"
+              minPixelRatio={1}
+            />
+          </div>
+        </Suspense>
+      ) : null}
     </div>
   );
 }
