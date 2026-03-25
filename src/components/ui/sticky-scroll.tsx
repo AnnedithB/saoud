@@ -13,7 +13,7 @@ type StickyScrollProps = {
   items: StickyScrollItem[];
 };
 
-const Component = forwardRef<HTMLElement, StickyScrollProps>(({ items }, ref) => {
+const Component = forwardRef<HTMLDivElement, StickyScrollProps>(({ items }, ref) => {
   if (!items?.length) return null;
 
   // Keep the existing sticky-scroll layout (5 left, 3 sticky center, 5 right) and
