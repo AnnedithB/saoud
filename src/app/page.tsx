@@ -1,7 +1,24 @@
-import PixelFishing from '@/components/ui/pixel-fishing';
 import { HeroDitheringBackground } from '@/components/ui/hero-dithering-card';
-import StickyScroll, { type StickyScrollItem } from '@/components/ui/sticky-scroll';
+import { InteractiveRobotSpline } from '@/components/ui/interactive-3d-robot';
+import StickyScroll from '@/components/ui/sticky-scroll';
+import { ProjectShowcase } from '@/components/ui/project-showcase';
+import { GlowCard } from '@/components/ui/spotlight-card';
+import { TextScramble } from '@/components/ui/text-scramble';
+import TeamMemberCard from '@/components/ui/team-member-card';
+import { BackgroundPathsOverlay } from '@/components/ui/background-paths';
+import {
+  HoverSlider,
+  HoverSliderImageWrap,
+  HoverSliderSlide,
+  TextStaggerHover,
+} from '@/components/ui/animated-slideshow';
+import PixelFishing from '@/components/ui/pixel-fishing';
+import BugCatcher from '@/components/ui/bug-catcher';
+import HarvestRush from '@/components/ui/harvest-rush';
+import RiverDodge from '@/components/ui/river-dodge';
+import CampfireKeeper from '@/components/ui/campfire-keeper';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/ui/reveal';
 import {
   Card,
   CardContent,
@@ -16,15 +33,12 @@ import {
   Github,
   Linkedin,
   Mail,
-  MapPin,
-  Phone,
   Server,
 } from 'lucide-react';
 
 const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
 
 const NAV_ITEMS = [
-  { href: '#about', label: 'About' },
   { href: '#skills', label: 'Skills' },
   { href: '#experience', label: 'Experience' },
   { href: PROJECTS_EXTERNAL_URL, label: 'Projects' },
@@ -32,320 +46,212 @@ const NAV_ITEMS = [
   { href: '#contact', label: 'Contact' },
 ] as const;
 
-const PORTFOLIO_PROJECTS: StickyScrollItem[] = [
+const ROBOT_SCENE_URL = 'https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode';
+
+function ArcadeStage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-[300px] sm:w-[360px] flex items-center justify-center">
+      <div className="w-full min-h-[360px] sm:min-h-[420px] flex items-center justify-center">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+const ARCADE_SLIDES = [
   {
-    title: 'Topnewsongs Music Website',
-    href: 'https://sillylittletools.com/topnewsongs-music-website.html',
-    imageSrc: 'https://sillylittletools.com/img/works/topnewsongs.png',
+    id: 'slide-1',
+    title: 'Pixel Fishing',
   },
   {
-    title: 'Crossroads Travel Agency',
-    href: 'https://sillylittletools.com/crossroads-travel-agency.html',
-    imageSrc: 'https://sillylittletools.com/img/works/crossroads.png',
+    id: 'slide-2',
+    title: 'Bug Catcher',
   },
   {
-    title: 'San Lorenzo Investments Firm',
-    href: 'https://sillylittletools.com/san-lorenzo-investments.html',
-    imageSrc: 'https://sillylittletools.com/img/works/sanlorenzo.png',
+    id: 'slide-3',
+    title: 'Harvest Rush',
   },
   {
-    title: 'Depend AI Studio',
-    href: 'https://sillylittletools.com/depend-ai-studio.html',
-    imageSrc: 'https://sillylittletools.com/img/works/dependai.png',
+    id: 'slide-4',
+    title: 'River Dodge',
   },
   {
-    title: 'Just Jobs Resume Builder',
-    href: 'https://sillylittletools.com/just-jobs-resume-builder.html',
-    imageSrc: 'https://sillylittletools.com/img/works/justjobs.png',
+    id: 'slide-5',
+    title: 'Campfire Keeper',
   },
-  {
-    title: 'Brandit Lab Advertisement Agency',
-    href: 'https://sillylittletools.com/brandit-lab.html',
-    imageSrc: 'https://sillylittletools.com/img/works/brandit.png',
-  },
-];
+] as const;
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="wrapper flex h-14 items-center justify-between">
-          <a href="#top" className="font-semibold tracking-tight">
-            Saoud Ahmed
-          </a>
+    <div className="flex flex-col flex-1 bg-black text-foreground">
+      <div className="relative overflow-hidden">
+        <HeroDitheringBackground
+          className="absolute inset-0 animate-slow-slide"
+          colorFront="#7C3AED"
+          opacity={0.35}
+          speed={0.12}
+          hoverSpeed={0.35}
+        />
+        <div className="absolute inset-0 bg-background/45 dark:bg-background/35" />
 
-          <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            {NAV_ITEMS.map(item => {
-              const isExternal = item.href.startsWith('http');
-              return (
-                <a
-                  key={item.href}
-                  className="hover:text-foreground"
-                  href={item.href}
-                  target={isExternal ? '_blank' : undefined}
-                  rel={isExternal ? 'noreferrer' : undefined}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </nav>
-
-          <Button asChild size="sm" variant="outline">
-            <a href="mailto:saoudahmed02@gmail.com">
-              <Mail />
-              Email
+        <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="wrapper flex h-14 items-center justify-between">
+            <a
+              href="#top"
+              className="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <TextScramble text="Saoud Ahmed" className="scale-[0.7] origin-left" />
             </a>
-          </Button>
-        </div>
-      </header>
 
-      <main id="top" className="flex-1">
-        <section className="py-12 w-full flex justify-center items-center px-4 md:px-6">
-          <div className="w-full max-w-7xl relative">
-            <div className="relative overflow-hidden rounded-[48px] border border-border bg-card shadow-sm">
-              <HeroDitheringBackground
-                className="absolute inset-0 animate-slow-slide"
-                colorFront="#7C3AED"
-                opacity={0.4}
-                speed={0.12}
-                hoverSpeed={0.35}
-              />
-              <div className="absolute inset-0 bg-background/35 dark:bg-background/25" />
+            <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+              {NAV_ITEMS.map(item => {
+                const isExternal = item.href.startsWith('http');
+                return (
+                  <a
+                    key={item.href}
+                    className="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    href={item.href}
+                    target={isExternal ? '_blank' : undefined}
+                    rel={isExternal ? 'noreferrer' : undefined}
+                  >
+                    <TextScramble text={item.label} className="scale-[0.65] origin-left" />
+                  </a>
+                );
+              })}
+            </nav>
 
-              <div className="relative z-10 p-6 md:p-12">
-                <div className="grid gap-10 md:grid-cols-12 md:items-start">
-                  <div className="space-y-6 md:col-span-7">
-                    <p className="text-sm text-muted-foreground">Full Stack Developer</p>
-                    <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
-                      Building reliable web apps with modern backend architecture.
-                    </h1>
-                    <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-                      MERN-focused engineer with experience designing RESTful APIs, optimizing
-                      database performance, and deploying production-ready systems on AWS.
-                    </p>
-
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <Button asChild>
-                        <a href={PROJECTS_EXTERNAL_URL} target="_blank" rel="noreferrer">
-                          View projects
-                        </a>
-                      </Button>
-                      <Button asChild variant="outline">
-                        <a href="#contact">Contact</a>
-                      </Button>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span className="inline-flex items-center gap-2">
-                        <MapPin className="size-4" /> Islamabad, Pakistan
-                      </span>
-                      <a
-                        className="inline-flex items-center gap-2 hover:text-foreground"
-                        href="tel:+923158910010"
-                      >
-                        <Phone className="size-4" /> (+92) 3158910010
-                      </a>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <Button asChild variant="secondary" size="sm">
-                        <a href="mailto:saoudahmed02@gmail.com">
-                          <Mail />
-                          Email
-                        </a>
-                      </Button>
-                      <Button asChild variant="secondary" size="sm">
-                        <a
-                          href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Linkedin />
-                          LinkedIn
-                        </a>
-                      </Button>
-                      <Button asChild variant="secondary" size="sm">
-                        <a href="https://github.com/" target="_blank" rel="noreferrer">
-                          <Github />
-                          GitHub
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-5">
-                    <Card className="bg-background/55 dark:bg-background/45 backdrop-blur">
-                      <CardHeader>
-                        <CardTitle>Focus areas</CardTitle>
-                        <CardDescription>
-                          The work I enjoy most: reliable systems, clean UX, and shipping.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-6">
-                        <div className="flex items-start gap-3">
-                          <Server className="mt-0.5 size-5 text-muted-foreground" />
-                          <div className="space-y-1">
-                            <p className="font-medium">Backend architecture</p>
-                            <p className="text-sm text-muted-foreground">
-                              REST APIs, auth, performance optimization.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <Code className="mt-0.5 size-5 text-muted-foreground" />
-                          <div className="space-y-1">
-                            <p className="font-medium">Frontend delivery</p>
-                            <p className="text-sm text-muted-foreground">
-                              Next.js, responsive component systems.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <Cloud className="mt-0.5 size-5 text-muted-foreground" />
-                          <div className="space-y-1">
-                            <p className="font-medium">Cloud & DevOps</p>
-                            <p className="text-sm text-muted-foreground">
-                              AWS, CI/CD, production deployments.
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Button asChild size="sm" variant="outline">
+              <a href="mailto:saoudahmed02@gmail.com">
+                <Mail />
+                Email
+              </a>
+            </Button>
           </div>
-        </section>
+        </header>
 
-        <section id="about" className="wrapper py-16">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">About</h2>
-              <p className="max-w-3xl leading-8 text-muted-foreground">
-                Full Stack Engineer focused on MERN (MongoDB, Express, React, Node) with 1+
-                year building scalable web applications and backend systems. I care most
-                about backend architecture, performance, and reliable deployments.
-              </p>
+        <main id="top" className="relative z-10">
+          <section className="min-h-[calc(95vh-3.5rem)] flex items-center justify-center relative">
+            <div className="absolute inset-0 z-0 pointer-events-none bg-background/55 dark:bg-background/40" />
+
+            <div className="wrapper relative z-10 grid gap-12 items-center md:grid-cols-12">
+              <Reveal className="md:col-span-7 text-center md:text-left space-y-7 md:pr-4">
+                <p className="text-sm text-muted-foreground ui-fade-up">Full Stack Developer</p>
+                <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl ui-fade-up">
+                  Building reliable web apps with modern backend architecture.
+                </h1>
+                <p className="text-muted-foreground text-lg leading-8 max-w-2xl mx-auto md:mx-0 ui-fade-up">
+                  MERN-focused engineer building scalable APIs and clean product UX.
+                </p>
+
+                <div className="flex flex-row flex-wrap items-center justify-center md:justify-start gap-3">
+                  <Button asChild>
+                    <a href={PROJECTS_EXTERNAL_URL} target="_blank" rel="noreferrer">
+                      View projects
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a href="#contact">Contact</a>
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                  <Button asChild variant="secondary" size="sm">
+                    <a href="mailto:saoudahmed02@gmail.com">
+                      <Mail />
+                      Email
+                    </a>
+                  </Button>
+                  <Button asChild variant="secondary" size="sm">
+                    <a
+                      href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Linkedin />
+                      LinkedIn
+                    </a>
+                  </Button>
+                  <Button asChild variant="secondary" size="sm">
+                    <a href="https://github.com/" target="_blank" rel="noreferrer">
+                      <Github />
+                      GitHub
+                    </a>
+                  </Button>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.08} className="hidden md:flex md:col-span-5 items-center justify-end">
+                <div className="relative w-full aspect-square max-w-[460px] rounded-3xl overflow-hidden border border-border bg-black/10 dark:bg-white/5 shadow-2xl">
+                  <InteractiveRobotSpline
+                    scene={ROBOT_SCENE_URL}
+                    className="absolute inset-0"
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/40" />
+                </div>
+              </Reveal>
             </div>
+          </section>
+        </main>
+      </div>
+
+      <main className="flex-1 bg-black relative">
+        <BackgroundPathsOverlay className="text-white/30" />
+        <div className="relative z-10">
+          <Separator />
+
+        <section id="projects" className="wrapper py-16">
+          <div className="space-y-6">
+            <Reveal className="space-y-2">
+              <h2 className="text-2xl font-semibold tracking-tight">Projects</h2>
+              <p className="max-w-3xl text-muted-foreground">
+                A few projects that show how I approach architecture, automation, and real-time systems.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.06}>
+              <StickyScroll />
+            </Reveal>
           </div>
         </section>
 
         <Separator />
 
         <section id="skills" className="wrapper py-16">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">Skills</h2>
-              <p className="max-w-3xl text-muted-foreground">
-                A practical stack for shipping product end-to-end.
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Frontend</CardTitle>
-                  <CardDescription>Interfaces that stay fast and predictable.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  React, Next.js, HTML, CSS
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Backend</CardTitle>
-                  <CardDescription>APIs and services with clear contracts.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  Node.js, Express, REST APIs, JWT auth
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cloud & DevOps</CardTitle>
-                  <CardDescription>Deployments you can trust.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  AWS (EC2, S3), GitHub, CI/CD
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Additional</CardTitle>
-                  <CardDescription>Useful tools I can ramp quickly.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  Java (Spring Boot), Flutter (basic), Swift (basic), NLP
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          <Reveal>
+            <ProjectShowcase />
+          </Reveal>
         </section>
 
         <Separator />
 
         <section id="experience" className="wrapper py-16">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">Experience</h2>
-              <p className="max-w-3xl text-muted-foreground">
-                Roles where I’ve shipped features, owned deployments, and improved performance.
-              </p>
-            </div>
+          <Reveal className="space-y-2">
+            <h2 className="text-2xl font-semibold tracking-tight">Experience</h2>
+            <p className="max-w-3xl text-muted-foreground">
+              Roles where I’ve shipped features, owned deployments, and improved performance.
+            </p>
+          </Reveal>
 
-            <div className="grid gap-6">
-              <Card>
-                <CardHeader>
-                  <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
-                    <CardTitle>Freelancing — Full Stack Developer</CardTitle>
-                    <p className="text-sm text-muted-foreground">Jun 2025 — Present</p>
-                  </div>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <ul className="list-disc space-y-2 pl-5">
-                    <li>Led end-to-end development and deployment of MERN apps.</li>
-                    <li>Designed secure REST APIs with Node.js and Express.</li>
-                    <li>Optimized MongoDB queries and indexing; improved response time ~30%.</li>
-                    <li>Deployed on AWS EC2 with S3 storage and secure environment setup.</li>
-                    <li>Built scalable admin dashboards with React and Next.js.</li>
-                  </ul>
-                </CardContent>
-              </Card>
+          <div className="mt-10 space-y-10">
+            <TeamMemberCard
+              position="left"
+              jobPosition="Freelancing (Jun 2025 — Present)"
+              firstName="Full Stack"
+              lastName="Developer"
+              imageUrl="/img/works/dependai.png"
+              description="Led end-to-end MERN development and deployments. Designed secure REST APIs with Node/Express, optimized MongoDB queries (~30% faster responses), shipped admin dashboards with React/Next, and deployed to AWS EC2 with S3 storage."
+              className="my-0"
+            />
 
-              <Card>
-                <CardHeader>
-                  <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
-                    <CardTitle>RubrixCode — Full Stack Developer</CardTitle>
-                    <p className="text-sm text-muted-foreground">Jul 2024 — May 2025</p>
-                  </div>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <ul className="list-disc space-y-2 pl-5">
-                    <li>Contributed to client-facing production apps using MERN.</li>
-                    <li>Built backend services with Node.js and Express.</li>
-                    <li>Designed and optimized schemas across MongoDB and MySQL.</li>
-                    <li>Delivered responsive, component-based UI with React and Next.js.</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        <Separator />
-
-        <section id="projects" className="wrapper py-16">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">Projects</h2>
-              <p className="max-w-3xl text-muted-foreground">
-                A few projects that show how I approach architecture, automation, and real-time systems.
-              </p>
-            </div>
-
-            <StickyScroll items={PORTFOLIO_PROJECTS} />
+            <TeamMemberCard
+              position="right"
+              jobPosition="RubrixCode (Jul 2024 — May 2025)"
+              firstName="Full Stack"
+              lastName="Developer"
+              imageUrl="/img/works/crossroads.png"
+              description="Built backend services for data-intensive platforms with Node/Express. Designed and optimized schemas across MongoDB and MySQL, and delivered responsive, component-based UIs using React and Next.js."
+              className="my-0"
+            />
           </div>
         </section>
 
@@ -353,54 +259,106 @@ export default function Home() {
 
         <section id="arcade" className="wrapper py-16">
           <div className="space-y-6">
-            <div className="space-y-2">
+            <Reveal className="space-y-2">
               <h2 className="text-2xl font-semibold tracking-tight">Arcade</h2>
               <p className="max-w-3xl text-muted-foreground">
                 A small game I built for fun. Quick break, then back to shipping.
               </p>
-            </div>
+            </Reveal>
 
-            <div className="flex justify-center md:justify-start">
-              <PixelFishing />
-            </div>
+            <Reveal delay={0.06}>
+              <HoverSlider className="w-full place-content-center rounded-2xl border border-border bg-[#faf9f5] p-6 text-[#3d3929] md:px-12">
+              <div className="flex flex-wrap items-center justify-evenly gap-6 md:gap-12">
+                <div className="flex flex-col space-y-2 md:space-y-4">
+                  {ARCADE_SLIDES.map((slide, index) => (
+                    <TextStaggerHover
+                      key={slide.id}
+                      index={index}
+                      className="cursor-pointer text-3xl font-bold uppercase tracking-tighter sm:text-4xl"
+                      text={slide.title}
+                    />
+                  ))}
+                </div>
+                <HoverSliderImageWrap className="w-[300px] sm:w-[360px]">
+                  <HoverSliderSlide index={0} className="size-full" unmountOnExit>
+                    <ArcadeStage>
+                      <div className="w-full h-full rounded-xl overflow-hidden">
+                        <PixelFishing embedded />
+                      </div>
+                    </ArcadeStage>
+                  </HoverSliderSlide>
+                  <HoverSliderSlide index={1} className="size-full" unmountOnExit>
+                    <ArcadeStage>
+                      <BugCatcher />
+                    </ArcadeStage>
+                  </HoverSliderSlide>
+                  <HoverSliderSlide index={2} className="size-full" unmountOnExit>
+                    <ArcadeStage>
+                      <HarvestRush />
+                    </ArcadeStage>
+                  </HoverSliderSlide>
+                  <HoverSliderSlide index={3} className="size-full" unmountOnExit>
+                    <ArcadeStage>
+                      <RiverDodge />
+                    </ArcadeStage>
+                  </HoverSliderSlide>
+                  <HoverSliderSlide index={4} className="size-full" unmountOnExit>
+                    <ArcadeStage>
+                      <CampfireKeeper />
+                    </ArcadeStage>
+                  </HoverSliderSlide>
+                </HoverSliderImageWrap>
+              </div>
+              </HoverSlider>
+            </Reveal>
           </div>
         </section>
 
         <Separator />
 
         <section id="contact" className="wrapper py-16">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl md:text-3xl">Let’s build something solid.</CardTitle>
-              <CardDescription className="max-w-2xl leading-8">
-                If you’re hiring or want help shipping a product end-to-end, I’m available for freelance and full-time opportunities.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild>
-                  <a href="mailto:saoudahmed02@gmail.com">
-                    <Mail />
-                    Email me
-                  </a>
-                </Button>
-                <Button asChild variant="outline">
-                  <a
-                    href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <Linkedin />
-                    Connect on LinkedIn
-                  </a>
-                </Button>
+          <Reveal>
+            <GlowCard
+              glowColor="orange"
+              customSize
+              className="w-full p-0 overflow-hidden [--size:460] [--saturation:155] [--lightness:84] [--bg-spot-opacity:0.42] [--border-spot-opacity:1] [--border-light-opacity:1] [--border-spot-brightness:3.7] [--border-spot-saturate:1.7] [--border-spot-blur:1.6] [--border-spot-scale:1.15] [--border-falloff:58%] [--border-light-scale:0.9] [--border-light-blur:1.25] [--border-light-falloff:56%]"
+            >
+              <div className="p-6 md:p-8">
+                <div className="space-y-2">
+                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+                    Let’s build something solid.
+                  </h2>
+                  <p className="max-w-2xl text-muted-foreground leading-8">
+                    If you’re hiring or want help shipping a product end-to-end, I’m available for freelance and full-time opportunities.
+                  </p>
+                </div>
+
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <Button asChild>
+                    <a href="mailto:saoudahmed02@gmail.com">
+                      <Mail />
+                      Email me
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a
+                      href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Linkedin />
+                      Connect on LinkedIn
+                    </a>
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </GlowCard>
+          </Reveal>
         </section>
+        </div>
       </main>
 
-      <footer className="border-t border-border py-10">
+      <footer className="bg-black border-t border-border py-10">
         <div className="wrapper flex flex-col gap-2 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Saoud Ahmed</p>
           <p className="text-muted-foreground/80">
@@ -409,9 +367,9 @@ export default function Home() {
               href="https://www.sillylittletools.com/"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-foreground underline underline-offset-4"
+              className="inline-flex rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              www.sillylittletools.com
+              <TextScramble text="www.sillylittletools.com" className="scale-[0.7] origin-left" />
             </a>
           </p>
         </div>

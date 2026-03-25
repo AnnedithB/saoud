@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: 'Saoud Ahmed | Full Stack Developer',
   description:
     'Full Stack Developer specializing in MERN stack, backend architecture, and cloud deployments.',
+  icons: {
+    icon: 'https://sillylittletools.com/favicon.ico',
+    shortcut: 'https://sillylittletools.com/favicon.ico',
+    apple: 'https://sillylittletools.com/img/favicon.jpg',
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +33,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        {/* Reduce Spline connection + TLS setup time */}
+        <link rel="preconnect" href="https://prod.spline.design" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://prod.spline.design" />
+      </head>
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }

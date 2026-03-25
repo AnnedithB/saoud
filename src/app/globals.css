@@ -7,8 +7,8 @@
   --card-foreground: #171717;
   --popover: #ffffff;
   --popover-foreground: #171717;
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
+  --primary: #ffffff;
+  --primary-foreground: #0a0a0a;
   --secondary: #f4f4f5;
   --secondary-foreground: #0a0a0a;
   --muted: #f4f4f5;
@@ -54,7 +54,7 @@
     --card-foreground: #ededed;
     --popover: #0a0a0a;
     --popover-foreground: #ededed;
-    --primary: #ededed;
+    --primary: #ffffff;
     --primary-foreground: #0a0a0a;
     --secondary: #27272a;
     --secondary-foreground: #ededed;
@@ -78,7 +78,17 @@ body {
 
 @layer utilities {
   .wrapper {
-    @apply mx-auto w-full max-w-5xl px-4;
+    @apply mx-auto w-full max-w-6xl px-4 md:px-6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-slow-slide {
+      animation: none !important;
+    }
+    .ui-hover-lift {
+      transition: none !important;
+      transform: none !important;
+    }
   }
 
   @keyframes slowSlide {
@@ -96,5 +106,31 @@ body {
   .animate-slow-slide {
     animation: slowSlide 18s ease-in-out infinite;
     will-change: transform;
+  }
+
+  @keyframes uiFadeUp {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .ui-fade-up {
+    animation: uiFadeUp 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ui-hover-lift {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .ui-hover-lift:hover {
+    transform: translate3d(0, -2px, 0);
+  }
+  .ui-hover-lift:active {
+    transform: translate3d(0, 0, 0);
   }
 }

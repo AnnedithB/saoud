@@ -1,96 +1,204 @@
 'use client';
-import { ReactLenis } from 'lenis/react';
 import React, { forwardRef } from 'react';
 
-export type StickyScrollItem = {
-  title: string;
-  href: string;
-  imageSrc: string;
-  alt?: string;
-};
+type StickyScrollProps = React.HTMLAttributes<HTMLElement>;
 
-type StickyScrollProps = {
-  items: StickyScrollItem[];
-};
+const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...props }, ref) => {
+  const PROJECT_BASE_URL = 'https://sillylittletools.com';
 
-const Component = forwardRef<HTMLDivElement, StickyScrollProps>(({ items }, ref) => {
-  if (!items?.length) return null;
+  const tiles = [
+    // Source images are in `saoud/public/img/works/*`
+    {
+      src: '/img/works/topnewsongs.png',
+      alt: 'Topnewsongs Music Website',
+      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
+    },
+    {
+      src: '/img/works/crossroads.png',
+      alt: 'Crossroads Travel Agency',
+      href: `${PROJECT_BASE_URL}/crossroads-travel-agency.html`,
+    },
+    {
+      src: '/img/works/sanlorenzo.png',
+      alt: 'San Lorenzo Investments Firm',
+      href: `${PROJECT_BASE_URL}/san-lorenzo-investments.html`,
+    },
+    {
+      src: '/img/works/dependai.png',
+      alt: 'Depend AI Studio',
+      href: `${PROJECT_BASE_URL}/depend-ai-studio.html`,
+    },
+    {
+      src: '/img/works/justjobs.png',
+      alt: 'Just Jobs Resume Builder',
+      href: `${PROJECT_BASE_URL}/just-jobs-resume-builder.html`,
+    },
+    {
+      src: '/img/works/brandit.png',
+      alt: 'Brandit Lab Advertisement Agency',
+      href: `${PROJECT_BASE_URL}/brandit-lab.html`,
+    },
+    // Repeat to fill 13 tiles (5 + 3 + 5)
+    {
+      src: '/img/works/topnewsongs.png',
+      alt: 'Topnewsongs Music Website',
+      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
+    },
+    {
+      src: '/img/works/crossroads.png',
+      alt: 'Crossroads Travel Agency',
+      href: `${PROJECT_BASE_URL}/crossroads-travel-agency.html`,
+    },
+    {
+      src: '/img/works/sanlorenzo.png',
+      alt: 'San Lorenzo Investments Firm',
+      href: `${PROJECT_BASE_URL}/san-lorenzo-investments.html`,
+    },
+    {
+      src: '/img/works/dependai.png',
+      alt: 'Depend AI Studio',
+      href: `${PROJECT_BASE_URL}/depend-ai-studio.html`,
+    },
+    {
+      src: '/img/works/justjobs.png',
+      alt: 'Just Jobs Resume Builder',
+      href: `${PROJECT_BASE_URL}/just-jobs-resume-builder.html`,
+    },
+    {
+      src: '/img/works/brandit.png',
+      alt: 'Brandit Lab Advertisement Agency',
+      href: `${PROJECT_BASE_URL}/brandit-lab.html`,
+    },
+    {
+      src: '/img/works/topnewsongs.png',
+      alt: 'Topnewsongs Music Website',
+      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
+    },
+  ] as const;
 
-  // Keep the existing sticky-scroll layout (5 left, 3 sticky center, 5 right) and
-  // repeat the provided items to fill the gallery.
-  const leftCount = 5;
-  const centerCount = 3;
-  const rightCount = 5;
-  const total = leftCount + centerCount + rightCount;
+  function FillImage({
+    src,
+    alt,
+    priority,
+  }: {
+    src: string;
+    alt: string;
+    priority?: boolean;
+  }) {
+    return (
+      <div className="relative w-full h-full overflow-hidden rounded-md">
+        <img
+          src={src}
+          alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          className="absolute inset-0 transition-all duration-300 h-full w-full align-bottom object-cover"
+        />
+      </div>
+    );
+  }
 
-  const filled = Array.from({ length: total }, (_, i) => items[i % items.length]);
-  const left = filled.slice(0, leftCount);
-  const center = filled.slice(leftCount, leftCount + centerCount);
-  const right = filled.slice(leftCount + centerCount);
+  function TileLink({
+    href,
+    children,
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="block h-full w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md"
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
-    <ReactLenis root>
-      <div ref={ref} className='bg-black'>
-        <section className='text-white w-full bg-slate-950'>
-          <div className='grid grid-cols-12 gap-2'>
-            <div className='grid gap-2 col-span-4'>
-              {left.map((item, idx) => (
-                <figure key={`${item.href}-${idx}`} className='w-full'>
-                  <a href={item.href} className='block' target='_blank' rel='noreferrer'>
-                    <img
-                      src={item.imageSrc}
-                      alt={item.alt ?? item.title}
-                      loading={idx === 0 ? 'eager' : 'lazy'}
-                      fetchPriority={idx === 0 ? 'high' : undefined}
-                      decoding='async'
-                      className='transition-all duration-300 w-full h-96 align-bottom object-cover rounded-md'
-                    />
-                  </a>
-                </figure>
-              ))}
-            </div>
+    <section
+      className={['text-white w-full', className].filter(Boolean).join(' ')}
+      ref={ref}
+      {...props}
+    >
+      <div className="grid grid-cols-12 gap-2">
+        <div className="grid gap-2 col-span-4">
+          <figure className="w-full h-96">
+            <TileLink href={tiles[0].href}>
+              <FillImage src={tiles[0].src} alt={tiles[0].alt} priority />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[1].href}>
+              <FillImage src={tiles[1].src} alt={tiles[1].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[2].href}>
+              <FillImage src={tiles[2].src} alt={tiles[2].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[3].href}>
+              <FillImage src={tiles[3].src} alt={tiles[3].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[4].href}>
+              <FillImage src={tiles[4].src} alt={tiles[4].alt} />
+            </TileLink>
+          </figure>
+        </div>
 
-            <div className='sticky top-0 h-screen w-full col-span-4 gap-2 grid grid-rows-3'>
-              {center.map((item, idx) => {
-                const globalIdx = leftCount + idx;
-                return (
-                  <figure key={`${item.href}-${globalIdx}`} className='w-full h-full'>
-                    <a href={item.href} className='block' target='_blank' rel='noreferrer'>
-                      <img
-                        src={item.imageSrc}
-                        alt={item.alt ?? item.title}
-                        loading='lazy'
-                        decoding='async'
-                        className='transition-all duration-300 h-full w-full align-bottom object-cover rounded-md'
-                      />
-                    </a>
-                  </figure>
-                );
-              })}
-            </div>
+        <div className="sticky top-0 h-screen w-full col-span-4 gap-2 grid grid-rows-3">
+          <figure className="w-full h-full">
+            <TileLink href={tiles[5].href}>
+              <FillImage src={tiles[5].src} alt={tiles[5].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-full">
+            <TileLink href={tiles[6].href}>
+              <FillImage src={tiles[6].src} alt={tiles[6].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-full">
+            <TileLink href={tiles[7].href}>
+              <FillImage src={tiles[7].src} alt={tiles[7].alt} />
+            </TileLink>
+          </figure>
+        </div>
 
-            <div className='grid gap-2 col-span-4'>
-              {right.map((item, idx) => {
-                const globalIdx = leftCount + centerCount + idx;
-                return (
-                  <figure key={`${item.href}-${globalIdx}`} className='w-full'>
-                    <a href={item.href} className='block' target='_blank' rel='noreferrer'>
-                      <img
-                        src={item.imageSrc}
-                        alt={item.alt ?? item.title}
-                        loading={globalIdx === 0 ? 'eager' : 'lazy'}
-                        decoding='async'
-                        className='transition-all duration-300 w-full h-96 align-bottom object-cover rounded-md'
-                      />
-                    </a>
-                  </figure>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <div className="grid gap-2 col-span-4">
+          <figure className="w-full h-96">
+            <TileLink href={tiles[8].href}>
+              <FillImage src={tiles[8].src} alt={tiles[8].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[9].href}>
+              <FillImage src={tiles[9].src} alt={tiles[9].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[10].href}>
+              <FillImage src={tiles[10].src} alt={tiles[10].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[11].href}>
+              <FillImage src={tiles[11].src} alt={tiles[11].alt} />
+            </TileLink>
+          </figure>
+          <figure className="w-full h-96">
+            <TileLink href={tiles[12].href}>
+              <FillImage src={tiles[12].src} alt={tiles[12].alt} />
+            </TileLink>
+          </figure>
+        </div>
       </div>
-    </ReactLenis>
+    </section>
   );
 });
 

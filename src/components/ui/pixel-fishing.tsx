@@ -331,23 +331,14 @@ function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
   ctx.fillText(text, x, y);
 }
 
-export default function PixelFishing() {
+export default function PixelFishing({ embedded = false }: { embedded?: boolean } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const envCacheRef = useRef<ImageData | null>(null);
   const frameRef = useRef(0);
 
   const [gameState, setGameState] = useState<GameState>('idle');
   const [score, setScore] = useState(0);
-  const [bestScore, setBestScore] = useState(() => {
-    try {
-      const saved = localStorage.getItem('pixelFishingBest');
-      if (!saved) return 0;
-      const n = parseInt(saved, 10);
-      return Number.isFinite(n) ? n : 0;
-    } catch {
-      return 0;
-    }
-  });
+  const [bestScore, setBestScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [fishCaught, setFishCaught] = useState(0);
   const [difficulty, setDifficulty] = useState(0);
@@ -367,6 +358,15 @@ export default function PixelFishing() {
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('pixelFishingBest');
+      if (!saved) return;
+      const n = parseInt(saved, 10);
+      if (Number.isFinite(n)) setBestScore(n);
+    } catch {}
+  }, []);
 
   const saveBest = useCallback((s: number) => {
     setBestScore(prev => {
@@ -617,6 +617,69 @@ export default function PixelFishing() {
 
   const multiplier = Math.min(5, 1 + Math.floor(combo / 3));
 
+  const hud = (
+    <div className="flex items-center justify-between gap-2 px-3 py-2 text-[10px] font-mono text-muted-foreground border-b border-border bg-muted/30">
+      <span>SCORE:{score}</span>
+      <span>BEST:{Math.max(score, bestScore)}</span>
+      {combo > 0 && <span className="text-foreground">x{multiplier}</span>}
+      <span>FISH:{fishCaught}</span>
+      <span>LVL:{difficulty}</span>
+    </div>
+  );
+
+  const canvas = (
+    <canvas
+      ref={canvasRef}
+      width={W}
+      height={H}
+      onClick={handleClick}
+      className="block w-full cursor-pointer [image-rendering:pixelated] [aspect-ratio:160/144]"
+    />
+  );
+
+  const controls = (
+    <div className="flex items-center gap-2">
+      {gameState === 'idle' ? (
+        <Button onClick={startGame} className="font-mono">
+          Cast
+        </Button>
+      ) : (
+        <Button onClick={startGame} variant="secondary" className="font-mono">
+          Restart
+        </Button>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        className="font-mono"
+        onClick={handleCanvasClick}
+        disabled={gameState !== 'fishing'}
+      >
+        Reel
+      </Button>
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full h-full flex flex-col justify-between select-none">
+        <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
+          {hud}
+          <div className="p-2 flex items-center justify-center">
+            <div className="w-full">{canvas}</div>
+          </div>
+        </div>
+
+        <div className="pt-3 space-y-2">
+          <div className="flex items-center justify-between">{controls}</div>
+          <p className="text-[10px] text-muted-foreground font-mono">
+            Click when the red dot hits the green zone.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Card className="w-full max-w-[720px] select-none">
       <CardHeader className="pb-4">
@@ -624,48 +687,10 @@ export default function PixelFishing() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="rounded-md border border-border bg-muted/40 overflow-hidden">
-          <div className="flex items-center justify-between px-3 py-2 text-xs font-mono text-muted-foreground border-b border-border">
-            <span>SCORE: {score}</span>
-            <span>BEST: {Math.max(score, bestScore)}</span>
-            {combo > 0 && (
-              <span className="text-foreground">
-                x{multiplier}
-              </span>
-            )}
-            <span>FISH: {fishCaught}</span>
-            <span>LVL: {difficulty}</span>
-          </div>
-
-          <canvas
-            ref={canvasRef}
-            width={W}
-            height={H}
-            onClick={handleClick}
-            className="block w-full cursor-pointer [image-rendering:pixelated] [aspect-ratio:160/144]"
-          />
+          {hud}
+          {canvas}
         </div>
-
-        <div className="flex items-center gap-2">
-          {gameState === 'idle' ? (
-            <Button onClick={startGame} className="font-mono">
-              Cast line
-            </Button>
-          ) : (
-            <Button onClick={startGame} variant="secondary" className="font-mono">
-              Restart
-            </Button>
-          )}
-          <Button
-            type="button"
-            variant="outline"
-            className="font-mono"
-            onClick={handleCanvasClick}
-            disabled={gameState !== 'fishing'}
-          >
-            Reel
-          </Button>
-        </div>
-
+        {controls}
         <p className="text-xs text-muted-foreground font-mono">
           Click when the red dot hits the green zone.
         </p>
