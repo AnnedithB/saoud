@@ -101,114 +101,120 @@ export default function Home() {
       </header>
 
       <main id="top" className="flex-1">
-        <section className="wrapper py-16 md:py-24 relative overflow-hidden">
-          <HeroDitheringBackground
-            className="absolute inset-0 animate-slow-slide"
-            colorFront="#7C3AED"
-            opacity={0.38}
-            speed={0.1}
-            hoverSpeed={0.28}
-          />
-          <div className="absolute inset-0 bg-background/70 dark:bg-background/55" />
-          <div className="relative z-10 grid gap-10 md:grid-cols-12 md:items-start">
-            <div className="space-y-6 md:col-span-7">
-              <p className="text-sm text-muted-foreground">Full Stack Developer</p>
-              <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
-                Building reliable web apps with modern backend architecture.
-              </h1>
-              <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-                MERN-focused engineer with experience designing RESTful APIs,
-                optimizing database performance, and deploying production-ready
-                systems on AWS.
-              </p>
+        <section className="py-12 w-full flex justify-center items-center px-4 md:px-6">
+          <div className="w-full max-w-7xl relative">
+            <div className="relative overflow-hidden rounded-[48px] border border-border bg-card shadow-sm">
+              <HeroDitheringBackground
+                className="absolute inset-0 animate-slow-slide"
+                colorFront="#7C3AED"
+                opacity={0.4}
+                speed={0.12}
+                hoverSpeed={0.35}
+              />
+              <div className="absolute inset-0 bg-background/35 dark:bg-background/25" />
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild>
-                  <a href={PROJECTS_EXTERNAL_URL} target="_blank" rel="noreferrer">
-                    View projects
-                  </a>
-                </Button>
-                <Button asChild variant="outline">
-                  <a href="#contact">Contact</a>
-                </Button>
-              </div>
+              <div className="relative z-10 p-6 md:p-12">
+                <div className="grid gap-10 md:grid-cols-12 md:items-start">
+                  <div className="space-y-6 md:col-span-7">
+                    <p className="text-sm text-muted-foreground">Full Stack Developer</p>
+                    <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+                      Building reliable web apps with modern backend architecture.
+                    </h1>
+                    <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
+                      MERN-focused engineer with experience designing RESTful APIs, optimizing
+                      database performance, and deploying production-ready systems on AWS.
+                    </p>
 
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-2">
-                  <MapPin className="size-4" /> Islamabad, Pakistan
-                </span>
-                <a
-                  className="inline-flex items-center gap-2 hover:text-foreground"
-                  href="tel:+923158910010"
-                >
-                  <Phone className="size-4" /> (+92) 3158910010
-                </a>
-              </div>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Button asChild>
+                        <a href={PROJECTS_EXTERNAL_URL} target="_blank" rel="noreferrer">
+                          View projects
+                        </a>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <a href="#contact">Contact</a>
+                      </Button>
+                    </div>
 
-              <div className="flex flex-wrap gap-2">
-                <Button asChild variant="secondary" size="sm">
-                  <a href="mailto:saoudahmed02@gmail.com">
-                    <Mail />
-                    Email
-                  </a>
-                </Button>
-                <Button asChild variant="secondary" size="sm">
-                  <a
-                    href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <Linkedin />
-                    LinkedIn
-                  </a>
-                </Button>
-                <Button asChild variant="secondary" size="sm">
-                  <a href="https://github.com/" target="_blank" rel="noreferrer">
-                    <Github />
-                    GitHub
-                  </a>
-                </Button>
-              </div>
-            </div>
+                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-2">
+                        <MapPin className="size-4" /> Islamabad, Pakistan
+                      </span>
+                      <a
+                        className="inline-flex items-center gap-2 hover:text-foreground"
+                        href="tel:+923158910010"
+                      >
+                        <Phone className="size-4" /> (+92) 3158910010
+                      </a>
+                    </div>
 
-            <div className="md:col-span-5">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Focus areas</CardTitle>
-                  <CardDescription>
-                    The work I enjoy most: reliable systems, clean UX, and shipping.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-start gap-3">
-                    <Server className="mt-0.5 size-5 text-muted-foreground" />
-                    <div className="space-y-1">
-                      <p className="font-medium">Backend architecture</p>
-                      <p className="text-sm text-muted-foreground">
-                        REST APIs, auth, performance optimization.
-                      </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button asChild variant="secondary" size="sm">
+                        <a href="mailto:saoudahmed02@gmail.com">
+                          <Mail />
+                          Email
+                        </a>
+                      </Button>
+                      <Button asChild variant="secondary" size="sm">
+                        <a
+                          href="https://www.linkedin.com/in/saoud-ahmed-a92855277"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Linkedin />
+                          LinkedIn
+                        </a>
+                      </Button>
+                      <Button asChild variant="secondary" size="sm">
+                        <a href="https://github.com/" target="_blank" rel="noreferrer">
+                          <Github />
+                          GitHub
+                        </a>
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Code className="mt-0.5 size-5 text-muted-foreground" />
-                    <div className="space-y-1">
-                      <p className="font-medium">Frontend delivery</p>
-                      <p className="text-sm text-muted-foreground">
-                        Next.js, responsive component systems.
-                      </p>
-                    </div>
+
+                  <div className="md:col-span-5">
+                    <Card className="bg-background/55 dark:bg-background/45 backdrop-blur">
+                      <CardHeader>
+                        <CardTitle>Focus areas</CardTitle>
+                        <CardDescription>
+                          The work I enjoy most: reliable systems, clean UX, and shipping.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="flex items-start gap-3">
+                          <Server className="mt-0.5 size-5 text-muted-foreground" />
+                          <div className="space-y-1">
+                            <p className="font-medium">Backend architecture</p>
+                            <p className="text-sm text-muted-foreground">
+                              REST APIs, auth, performance optimization.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Code className="mt-0.5 size-5 text-muted-foreground" />
+                          <div className="space-y-1">
+                            <p className="font-medium">Frontend delivery</p>
+                            <p className="text-sm text-muted-foreground">
+                              Next.js, responsive component systems.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <Cloud className="mt-0.5 size-5 text-muted-foreground" />
+                          <div className="space-y-1">
+                            <p className="font-medium">Cloud & DevOps</p>
+                            <p className="text-sm text-muted-foreground">
+                              AWS, CI/CD, production deployments.
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Cloud className="mt-0.5 size-5 text-muted-foreground" />
-                    <div className="space-y-1">
-                      <p className="font-medium">Cloud & DevOps</p>
-                      <p className="text-sm text-muted-foreground">
-                        AWS, CI/CD, production deployments.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </section>
