@@ -110,7 +110,7 @@ export default function Home() {
             hoverSpeed={0.28}
           />
           <div className="absolute inset-0 bg-background/70 dark:bg-background/55" />
-          <div className="grid gap-10 md:grid-cols-12 md:items-start">
+          <div className="relative z-10 grid gap-10 md:grid-cols-12 md:items-start">
             <div className="space-y-6 md:col-span-7">
               <p className="text-sm text-muted-foreground">Full Stack Developer</p>
               <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
