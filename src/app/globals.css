@@ -80,4 +80,21 @@ body {
   .wrapper {
     @apply mx-auto w-full max-w-5xl px-4;
   }
+
+  @keyframes slowSlide {
+    0% {
+      transform: translate3d(-2%, -1%, 0) scale(1.02);
+    }
+    50% {
+      transform: translate3d(2%, 1%, 0) scale(1.02);
+    }
+    100% {
+      transform: translate3d(-2%, -1%, 0) scale(1.02);
+    }
+  }
+
+  .animate-slow-slide {
+    animation: slowSlide 18s ease-in-out infinite;
+    will-change: transform;
+  }
 }

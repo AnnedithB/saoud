@@ -1,4 +1,5 @@
 import PixelFishing from '@/components/ui/pixel-fishing';
+import { HeroDitheringBackground } from '@/components/ui/hero-dithering-card';
 import StickyScroll, { type StickyScrollItem } from '@/components/ui/sticky-scroll';
 import { Button } from '@/components/ui/button';
 import {
@@ -100,7 +101,15 @@ export default function Home() {
       </header>
 
       <main id="top" className="flex-1">
-        <section className="wrapper py-16 md:py-24">
+        <section className="wrapper py-16 md:py-24 relative overflow-hidden">
+          <HeroDitheringBackground
+            className="absolute inset-0 animate-slow-slide"
+            colorFront="#7C3AED"
+            opacity={0.38}
+            speed={0.1}
+            hoverSpeed={0.28}
+          />
+          <div className="absolute inset-0 bg-background/70 dark:bg-background/55" />
           <div className="grid gap-10 md:grid-cols-12 md:items-start">
             <div className="space-y-6 md:col-span-7">
               <p className="text-sm text-muted-foreground">Full Stack Developer</p>
