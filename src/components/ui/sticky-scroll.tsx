@@ -2,132 +2,94 @@
 import { ReactLenis } from 'lenis/react';
 import React, { forwardRef } from 'react';
 
-const Component = forwardRef<HTMLElement>((props, ref) => {
+export type StickyScrollItem = {
+  title: string;
+  href: string;
+  imageSrc: string;
+  alt?: string;
+};
+
+type StickyScrollProps = {
+  items: StickyScrollItem[];
+};
+
+const Component = forwardRef<HTMLElement, StickyScrollProps>(({ items }, ref) => {
+  if (!items?.length) return null;
+
+  // Keep the existing sticky-scroll layout (5 left, 3 sticky center, 5 right) and
+  // repeat the provided items to fill the gallery.
+  const leftCount = 5;
+  const centerCount = 3;
+  const rightCount = 5;
+  const total = leftCount + centerCount + rightCount;
+
+  const filled = Array.from({ length: total }, (_, i) => items[i % items.length]);
+  const left = filled.slice(0, leftCount);
+  const center = filled.slice(leftCount, leftCount + centerCount);
+  const right = filled.slice(leftCount + centerCount);
+
   return (
     <ReactLenis root>
-      <main className='bg-black' ref={ref}>
-        <div className='wrapper'>
-          <section className='text-white  h-screen  w-full bg-slate-950  grid place-content-center sticky top-0'>
-            <div className='absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]'></div>
-
-            <h1 className='2xl:text-7xl text-5xl px-8 font-semibold text-center tracking-tight leading-[120%]'>
-              Create Gallery In a Better Way
-              <br />
-              Using CSS sticky properties <br />
-              Scroll down! 👇
-            </h1>
-          </section>
-        </div>
-
-        <section className='text-white   w-full bg-slate-950  '>
+      <div ref={ref} className='bg-black'>
+        <section className='text-white w-full bg-slate-950'>
           <div className='grid grid-cols-12 gap-2'>
             <div className='grid gap-2 col-span-4'>
-              <figure className=' w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1718838541476-d04e71caa347?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className=' w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1715432362539-6ab2ab480db2?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className=' w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1718601980986-0ce75101d52d?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1685904042960-66242a0ac352?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1719411182379-ffd97c1f7ebf?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
+              {left.map((item, idx) => (
+                <figure key={`${item.href}-${idx}`} className='w-full'>
+                  <a href={item.href} className='block' target='_blank' rel='noreferrer'>
+                    <img
+                      src={item.imageSrc}
+                      alt={item.alt ?? item.title}
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={idx === 0 ? 'high' : undefined}
+                      decoding='async'
+                      className='transition-all duration-300 w-full h-96 align-bottom object-cover rounded-md'
+                    />
+                  </a>
+                </figure>
+              ))}
             </div>
-            <div className='sticky top-0 h-screen w-full col-span-4 gap-2  grid grid-rows-3'>
-              <figure className='w-full h-full '>
-                <img
-                  src='https://images.unsplash.com/photo-1718969604981-de826f44ce15?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 h-full w-full  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full h-full '>
-                <img
-                  src='https://images.unsplash.com/photo-1476180814856-a36609db0493?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 h-full w-full align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full h-full '>
-                <img
-                  src='https://images.unsplash.com/photo-1595407660626-db35dcd16609?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 h-full w-full  align-bottom object-cover rounded-md '
-                />
-              </figure>
+
+            <div className='sticky top-0 h-screen w-full col-span-4 gap-2 grid grid-rows-3'>
+              {center.map((item, idx) => {
+                const globalIdx = leftCount + idx;
+                return (
+                  <figure key={`${item.href}-${globalIdx}`} className='w-full h-full'>
+                    <a href={item.href} className='block' target='_blank' rel='noreferrer'>
+                      <img
+                        src={item.imageSrc}
+                        alt={item.alt ?? item.title}
+                        loading='lazy'
+                        decoding='async'
+                        className='transition-all duration-300 h-full w-full align-bottom object-cover rounded-md'
+                      />
+                    </a>
+                  </figure>
+                );
+              })}
             </div>
+
             <div className='grid gap-2 col-span-4'>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1719547907790-f661a88302c2?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1599054799131-4b09c73a63cf?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1719963532023-01b573d1d584?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1714328101501-3594de6cb80f?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
-              <figure className='w-full'>
-                <img
-                  src='https://images.unsplash.com/photo-1719554873571-0fd6bf322bb1?w=500&auto=format&fit=crop'
-                  alt=''
-                  className='transition-all duration-300 w-full h-96  align-bottom object-cover rounded-md '
-                />
-              </figure>
+              {right.map((item, idx) => {
+                const globalIdx = leftCount + centerCount + idx;
+                return (
+                  <figure key={`${item.href}-${globalIdx}`} className='w-full'>
+                    <a href={item.href} className='block' target='_blank' rel='noreferrer'>
+                      <img
+                        src={item.imageSrc}
+                        alt={item.alt ?? item.title}
+                        loading={globalIdx === 0 ? 'eager' : 'lazy'}
+                        decoding='async'
+                        className='transition-all duration-300 w-full h-96 align-bottom object-cover rounded-md'
+                      />
+                    </a>
+                  </figure>
+                );
+              })}
             </div>
           </div>
         </section>
-
-        <footer className='group bg-slate-950 '>
-          <h1 className='text-[16vw]  translate-y-20 leading-[100%] uppercase font-semibold text-center bg-gradient-to-r from-gray-400 to-gray-800 bg-clip-text text-transparent transition-all ease-linear'>
-            ui-layout
-          </h1>
-          <div className='bg-black h-40 relative z-10 grid place-content-center text-2xl rounded-tr-full rounded-tl-full'></div>
-        </footer>
-      </main>
+      </div>
     </ReactLenis>
   );
 });

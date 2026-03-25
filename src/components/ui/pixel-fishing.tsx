@@ -618,7 +618,7 @@ export default function PixelFishing() {
   const multiplier = Math.min(5, 1 + Math.floor(combo / 3));
 
   return (
-    <Card className="w-full max-w-[420px] select-none">
+    <Card className="w-full max-w-[720px] select-none">
       <CardHeader className="pb-4">
         <CardTitle className="text-base">Pixel Fishing</CardTitle>
       </CardHeader>

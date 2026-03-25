@@ -1,4 +1,5 @@
 import PixelFishing from '@/components/ui/pixel-fishing';
+import StickyScroll, { type StickyScrollItem } from '@/components/ui/sticky-scroll';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,14 +20,49 @@ import {
   Server,
 } from 'lucide-react';
 
+const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
+
 const NAV_ITEMS = [
   { href: '#about', label: 'About' },
   { href: '#skills', label: 'Skills' },
   { href: '#experience', label: 'Experience' },
-  { href: '#projects', label: 'Projects' },
+  { href: PROJECTS_EXTERNAL_URL, label: 'Projects' },
   { href: '#arcade', label: 'Arcade' },
   { href: '#contact', label: 'Contact' },
 ] as const;
+
+const PORTFOLIO_PROJECTS: StickyScrollItem[] = [
+  {
+    title: 'Topnewsongs Music Website',
+    href: 'https://sillylittletools.com/topnewsongs-music-website.html',
+    imageSrc: 'https://sillylittletools.com/img/works/topnewsongs.png',
+  },
+  {
+    title: 'Crossroads Travel Agency',
+    href: 'https://sillylittletools.com/crossroads-travel-agency.html',
+    imageSrc: 'https://sillylittletools.com/img/works/crossroads.png',
+  },
+  {
+    title: 'San Lorenzo Investments Firm',
+    href: 'https://sillylittletools.com/san-lorenzo-investments.html',
+    imageSrc: 'https://sillylittletools.com/img/works/sanlorenzo.png',
+  },
+  {
+    title: 'Depend AI Studio',
+    href: 'https://sillylittletools.com/depend-ai-studio.html',
+    imageSrc: 'https://sillylittletools.com/img/works/dependai.png',
+  },
+  {
+    title: 'Just Jobs Resume Builder',
+    href: 'https://sillylittletools.com/just-jobs-resume-builder.html',
+    imageSrc: 'https://sillylittletools.com/img/works/justjobs.png',
+  },
+  {
+    title: 'Brandit Lab Advertisement Agency',
+    href: 'https://sillylittletools.com/brandit-lab.html',
+    imageSrc: 'https://sillylittletools.com/img/works/brandit.png',
+  },
+];
 
 export default function Home() {
   return (
@@ -38,11 +74,20 @@ export default function Home() {
           </a>
 
           <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            {NAV_ITEMS.map(item => (
-              <a key={item.href} className="hover:text-foreground" href={item.href}>
-                {item.label}
-              </a>
-            ))}
+            {NAV_ITEMS.map(item => {
+              const isExternal = item.href.startsWith('http');
+              return (
+                <a
+                  key={item.href}
+                  className="hover:text-foreground"
+                  href={item.href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noreferrer' : undefined}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           <Button asChild size="sm" variant="outline">
@@ -70,7 +115,9 @@ export default function Home() {
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button asChild>
-                  <a href="#projects">View projects</a>
+                  <a href={PROJECTS_EXTERNAL_URL} target="_blank" rel="noreferrer">
+                    View projects
+                  </a>
                 </Button>
                 <Button asChild variant="outline">
                   <a href="#contact">Contact</a>
@@ -283,45 +330,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>AuTest</CardTitle>
-                  <CardDescription>
-                    FastAPI · React · MongoDB · Appium · Node.js · Firebase
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <ul className="list-disc space-y-2 pl-5">
-                    <li>
-                      Scrapes Play Store reviews, cleans/classifies via NLP, and generates structured test cases using a fine-tuned LLM.
-                    </li>
-                    <li>
-                      Appium-based UI crawler builds navigation graphs to improve end-to-end coverage.
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Belle</CardTitle>
-                  <CardDescription>
-                    Node.js · GraphQL · PostgreSQL · Redis · WebRTC · Socket.IO · Stripe · AWS
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <ul className="list-disc space-y-2 pl-5">
-                    <li>
-                      Real-time product with matching, messaging, and calling on a microservices backend.
-                    </li>
-                    <li>
-                      Photo verification, subscriptions, push notifications, and admin analytics/moderation tooling.
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
+            <StickyScroll items={PORTFOLIO_PROJECTS} />
           </div>
         </section>
 
@@ -336,7 +345,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex justify-start">
+            <div className="flex justify-center md:justify-start">
               <PixelFishing />
             </div>
           </div>
@@ -380,7 +389,15 @@ export default function Home() {
         <div className="wrapper flex flex-col gap-2 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Saoud Ahmed</p>
           <p className="text-muted-foreground/80">
-            Built with Next.js, TypeScript, Tailwind, and ShadCN-style primitives.
+            Redirect:{" "}
+            <a
+              href="https://www.sillylittletools.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground underline underline-offset-4"
+            >
+              www.sillylittletools.com
+            </a>
           </p>
         </div>
       </footer>
