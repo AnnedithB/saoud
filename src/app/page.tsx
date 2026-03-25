@@ -48,7 +48,6 @@ export default function Home() {
           speed={0.12}
           hoverSpeed={0.35}
           defer
-          disableOnMobile
         />
         <div className="absolute inset-0 bg-background/45 dark:bg-background/35" />
 
