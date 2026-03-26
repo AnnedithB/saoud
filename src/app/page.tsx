@@ -1,11 +1,13 @@
+import { HeroDitheringBackground } from '@/components/ui/hero-dithering-card';
+import { InteractiveRobotSpline } from '@/components/ui/interactive-3d-robot';
 import StickyScroll from '@/components/ui/sticky-scroll';
+import { GlowCard } from '@/components/ui/spotlight-card';
 import { TextScramble } from '@/components/ui/text-scramble';
 import TeamMemberCard from '@/components/ui/team-member-card';
 import { BackgroundPathsOverlay } from '@/components/ui/background-paths';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/ui/reveal';
 import { ClientArcadeSlider, ClientProjectShowcase } from '@/components/sections/client-only';
-import { ContactGlowCardClient, HeroBackgroundClient, HeroRobotClient } from '@/components/sections/home-client-bits';
 import {
   Card,
   CardContent,
@@ -39,7 +41,15 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-black text-foreground">
       <div className="relative overflow-hidden">
-        <HeroBackgroundClient />
+        <HeroDitheringBackground
+          className="absolute inset-0 animate-slow-slide"
+          colorFront="#7C3AED"
+          opacity={0.35}
+          speed={0.12}
+          hoverSpeed={0.35}
+          defer
+          disableOnMobile={false}
+        />
         <div className="absolute inset-0 bg-background/45 dark:bg-background/35" />
 
         <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -130,7 +140,10 @@ export default function Home() {
 
               <Reveal delay={0.08} className="hidden md:flex md:col-span-5 items-center justify-end">
                 <div className="relative w-full aspect-square max-w-[460px] rounded-3xl overflow-hidden border border-border bg-black/10 dark:bg-white/5 shadow-2xl">
-                  <HeroRobotClient sceneUrl={ROBOT_SCENE_URL} />
+                  <InteractiveRobotSpline
+                    scene={ROBOT_SCENE_URL}
+                    className="absolute inset-0"
+                  />
                   <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/40" />
                 </div>
               </Reveal>
@@ -221,7 +234,11 @@ export default function Home() {
 
         <section id="contact" className="wrapper py-16">
           <Reveal>
-            <ContactGlowCardClient>
+            <GlowCard
+              glowColor="orange"
+              customSize
+              className="w-full p-0 overflow-hidden [--size:460] [--saturation:155] [--lightness:84] [--bg-spot-opacity:0.42] [--border-spot-opacity:1] [--border-light-opacity:1] [--border-spot-brightness:3.7] [--border-spot-saturate:1.7] [--border-spot-blur:1.6] [--border-spot-scale:1.15] [--border-falloff:58%] [--border-light-scale:0.9] [--border-light-blur:1.25] [--border-light-falloff:56%]"
+            >
               <div className="p-6 md:p-8">
                 <div className="space-y-2">
                   <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
@@ -251,7 +268,7 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-            </ContactGlowCardClient>
+            </GlowCard>
           </Reveal>
         </section>
         </div>
