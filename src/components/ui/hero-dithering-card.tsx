@@ -42,7 +42,7 @@ export function HeroDitheringBackground({
   speed = 0.12,
   hoverSpeed = 0.35,
   defer = true,
-  disableOnMobile = false,
+  disableOnMobile = true,
 }: HeroDitheringBackgroundProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isReady, setIsReady] = useState(!defer);
@@ -96,13 +96,24 @@ export function HeroDitheringBackground({
     [opacity],
   );
 
+  const shaderAllowed = !prefersReducedMotion && !(disableOnMobile && isMobile);
+  const shaderActive = shaderAllowed && isReady;
+
   return (
     <div
       className={className}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/25 via-transparent to-fuchsia-500/20" />
+      {/* Always show a visible purple backdrop (even when shader is disabled on mobile). */}
+      <div
+        className={[
+          "absolute inset-0",
+          shaderActive
+            ? "bg-gradient-to-br from-violet-500/10 via-transparent to-fuchsia-500/10"
+            : "bg-gradient-to-br from-violet-600/30 via-fuchsia-500/10 to-fuchsia-600/25",
+        ].join(" ")}
+      />
       {!prefersReducedMotion && !(disableOnMobile && isMobile) && isReady ? (
         <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
           <div
