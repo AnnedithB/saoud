@@ -7,22 +7,25 @@ const Spline = lazy(() => import('@splinetool/react-spline'));
 interface InteractiveRobotSplineProps {
   scene: string;
   className?: string;
-  /** Keep initial-load TBT low by requiring an explicit click/tap. */
-  requireClickToLoad?: boolean;
-  /** Safety valve so Spline still appears even without clicking. Set 0 to disable. */
+  /**
+   * Keep initial-load TBT low by not initializing Spline until the user interacts
+   * (mousemove/touchstart/keydown) or a fallback timeout fires.
+   */
+  deferUntilInteraction?: boolean;
+  /** Safety valve so Spline still appears even without interaction. */
   maxDeferMs?: number;
 }
 
 export function InteractiveRobotSpline({
   scene,
   className,
-  requireClickToLoad = true,
-  maxDeferMs = 0,
+  deferUntilInteraction = true,
+  maxDeferMs = 8000,
 }: InteractiveRobotSplineProps) {
   const [enabled, setEnabled] = useState(false);
   const hostRef = useRef<HTMLDivElement | null>(null);
 
-  const shouldEnableOnIdle = useMemo(() => !requireClickToLoad, [requireClickToLoad]);
+  const shouldEnableOnIdle = useMemo(() => !deferUntilInteraction, [deferUntilInteraction]);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -54,16 +57,13 @@ export function InteractiveRobotSpline({
       setEnabled(true);
     };
 
-    // If click-to-load is enabled, we don't auto-enable based on passive events
-    // because tools like Lighthouse can generate them and trigger the heavy init.
-    const host = hostRef.current;
-    const onClick = () => enable();
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') enable();
-    };
-    if (requireClickToLoad && host) {
-      host.addEventListener('pointerdown', onClick, { passive: true, once: true });
-      host.addEventListener('keydown', onKeyDown, { once: true });
+    const onInteract = () => enable();
+
+    const interactEvents: (keyof WindowEventMap)[] = ['mousemove', 'touchstart', 'keydown', 'wheel'];
+    if (deferUntilInteraction) {
+      for (const evt of interactEvents) {
+        window.addEventListener(evt, onInteract, { passive: true, once: true } as AddEventListenerOptions);
+      }
     }
 
     const idleId =
@@ -83,12 +83,11 @@ export function InteractiveRobotSpline({
         window.clearTimeout(idleId);
       }
       if (timeoutId != null) window.clearTimeout(timeoutId);
-      if (requireClickToLoad && host) {
-        host.removeEventListener('pointerdown', onClick as EventListener);
-        host.removeEventListener('keydown', onKeyDown as EventListener);
+      for (const evt of interactEvents) {
+        window.removeEventListener(evt, onInteract as EventListener);
       }
     };
-  }, [maxDeferMs, requireClickToLoad, scene, shouldEnableOnIdle]);
+  }, [deferUntilInteraction, maxDeferMs, scene, shouldEnableOnIdle]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -100,18 +99,8 @@ export function InteractiveRobotSpline({
       <div
         ref={hostRef}
         className={`w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/5 ${className ?? ''}`}
-        role={requireClickToLoad ? 'button' : undefined}
-        tabIndex={requireClickToLoad ? 0 : undefined}
-        aria-label={requireClickToLoad ? 'Load 3D' : undefined}
       >
         <div className="h-full w-full bg-gradient-to-b from-transparent via-transparent to-background/30" />
-        {requireClickToLoad ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="rounded-full border border-border bg-background/80 px-4 py-2 text-xs text-foreground backdrop-blur">
-              Tap to load 3D
-            </div>
-          </div>
-        ) : null}
       </div>
     );
   }
