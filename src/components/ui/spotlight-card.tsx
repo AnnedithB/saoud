@@ -46,27 +46,14 @@ const GlowCard: React.FC<GlowCardProps> = ({
       const card = cardRef.current;
       if (!card) return;
       const { x, y } = pointerRef.current;
-      card.style.setProperty('--x', x.toFixed(2));
-      card.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-      card.style.setProperty('--y', y.toFixed(2));
-      card.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
-    };
+      const rect = card.getBoundingClientRect();
+      const relX = Math.max(0, Math.min(rect.width, x - rect.left));
+      const relY = Math.max(0, Math.min(rect.height, y - rect.top));
 
-    const syncPointer = (e: PointerEvent) => {
-      const card = cardRef.current;
-      if (!card) return;
-
-      // Note: when listening on window, e.target can be `window`, so use the actual
-      // element under the pointer for hit-testing.
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const isOverCard = !!el && card.contains(el);
-      isTrackingRef.current = isOverCard;
-      if (!isOverCard) return;
-
-      pointerRef.current = { x: e.clientX, y: e.clientY };
-      if (rafRef.current == null) {
-        rafRef.current = window.requestAnimationFrame(flushPointer);
-      }
+      card.style.setProperty('--x', relX.toFixed(2));
+      card.style.setProperty('--xp', (relX / Math.max(1, rect.width)).toFixed(4));
+      card.style.setProperty('--y', relY.toFixed(2));
+      card.style.setProperty('--yp', (relY / Math.max(1, rect.height)).toFixed(4));
     };
 
     const stopTracking = () => {
@@ -77,10 +64,29 @@ const GlowCard: React.FC<GlowCardProps> = ({
       }
     };
 
-    window.addEventListener('pointermove', syncPointer, { passive: true });
+    const card = cardRef.current;
+    if (!card) return;
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isTrackingRef.current) return;
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+      if (rafRef.current == null) rafRef.current = window.requestAnimationFrame(flushPointer);
+    };
+
+    const startTracking = (e: PointerEvent) => {
+      isTrackingRef.current = true;
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+      if (rafRef.current == null) rafRef.current = window.requestAnimationFrame(flushPointer);
+    };
+
+    card.addEventListener('pointerenter', startTracking, { passive: true });
+    card.addEventListener('pointermove', onPointerMove, { passive: true });
+    card.addEventListener('pointerleave', stopTracking, { passive: true });
 
     return () => {
-      window.removeEventListener('pointermove', syncPointer);
+      card.removeEventListener('pointerenter', startTracking as EventListener);
+      card.removeEventListener('pointermove', onPointerMove as EventListener);
+      card.removeEventListener('pointerleave', stopTracking as EventListener);
       stopTracking();
     };
   }, []);

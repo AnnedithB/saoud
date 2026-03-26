@@ -23,6 +23,7 @@ export function InteractiveRobotSpline({
   maxDeferMs = 8000,
 }: InteractiveRobotSplineProps) {
   const [enabled, setEnabled] = useState(false);
+  const [prefetched, setPrefetched] = useState(false);
   const hostRef = useRef<HTMLDivElement | null>(null);
 
   const shouldEnableOnIdle = useMemo(() => !deferUntilInteraction, [deferUntilInteraction]);
@@ -39,6 +40,7 @@ export function InteractiveRobotSpline({
         entries => {
           const entry = entries[0];
           inView = Boolean(entry?.isIntersecting);
+          if (inView) setPrefetched(true);
         },
         { root: null, threshold: 0.15 },
       );
@@ -88,6 +90,18 @@ export function InteractiveRobotSpline({
       }
     };
   }, [deferUntilInteraction, maxDeferMs, scene, shouldEnableOnIdle]);
+
+  // Warm up Spline JS + scene fetch when in view, so interaction doesn't feel "stuck".
+  useEffect(() => {
+    if (!prefetched) return;
+    void import('@splinetool/react-spline');
+    // Best-effort scene prefetch; doesn't block render.
+    try {
+      fetch(scene, { cache: 'force-cache' }).catch(() => {});
+    } catch {
+      // ignore
+    }
+  }, [prefetched, scene]);
 
   useEffect(() => {
     if (!enabled) return;
