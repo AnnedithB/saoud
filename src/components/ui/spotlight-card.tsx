@@ -56,9 +56,10 @@ const GlowCard: React.FC<GlowCardProps> = ({
       const card = cardRef.current;
       if (!card) return;
 
-      // Robust hover detection: pointer events can originate from descendants.
-      // Track only when the pointer is actually over this card.
-      const isOverCard = e.target instanceof Node && card.contains(e.target);
+      // Note: when listening on window, e.target can be `window`, so use the actual
+      // element under the pointer for hit-testing.
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const isOverCard = !!el && card.contains(el);
       isTrackingRef.current = isOverCard;
       if (!isOverCard) return;
 
