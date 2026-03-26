@@ -36,21 +36,52 @@ const GlowCard: React.FC<GlowCardProps> = ({
   customSize = false,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const isTrackingRef = useRef(false);
+  const pointerRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const syncPointer = (e: PointerEvent) => {
-      const { clientX: x, clientY: y } = e;
+    const flushPointer = () => {
+      rafRef.current = null;
+      const card = cardRef.current;
+      if (!card) return;
+      const { x, y } = pointerRef.current;
+      card.style.setProperty('--x', x.toFixed(2));
+      card.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
+      card.style.setProperty('--y', y.toFixed(2));
+      card.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+    };
 
-      if (cardRef.current) {
-        cardRef.current.style.setProperty('--x', x.toFixed(2));
-        cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-        cardRef.current.style.setProperty('--y', y.toFixed(2));
-        cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+    const syncPointer = (e: PointerEvent) => {
+      const card = cardRef.current;
+      if (!card) return;
+
+      // Robust hover detection: pointer events can originate from descendants.
+      // Track only when the pointer is actually over this card.
+      const isOverCard = e.target instanceof Node && card.contains(e.target);
+      isTrackingRef.current = isOverCard;
+      if (!isOverCard) return;
+
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+      if (rafRef.current == null) {
+        rafRef.current = window.requestAnimationFrame(flushPointer);
       }
     };
 
-    document.addEventListener('pointermove', syncPointer);
-    return () => document.removeEventListener('pointermove', syncPointer);
+    const stopTracking = () => {
+      isTrackingRef.current = false;
+      if (rafRef.current != null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    window.addEventListener('pointermove', syncPointer, { passive: true });
+
+    return () => {
+      window.removeEventListener('pointermove', syncPointer);
+      stopTracking();
+    };
   }, []);
 
   const { base, spread } = glowColorMap[glowColor];
@@ -82,7 +113,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       backgroundColor: 'var(--backdrop, transparent)',
       backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
       backgroundPosition: '50% 50%',
-      backgroundAttachment: 'fixed',
+      backgroundAttachment: 'scroll',
       border: 'var(--border-size) solid var(--backup-border)',
       position: 'relative',
       touchAction: 'none',
@@ -107,7 +138,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       inset: calc(var(--border-size) * -1);
       border: var(--border-size) solid transparent;
       border-radius: calc(var(--radius) * 1px);
-      background-attachment: fixed;
+      background-attachment: scroll;
       background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
       background-repeat: no-repeat;
       background-position: 50% 50%;

@@ -1,17 +1,34 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import {
   HoverSlider,
   HoverSliderImageWrap,
   HoverSliderSlide,
   TextStaggerHover,
 } from '@/components/ui/animated-slideshow';
-import PixelFishing from '@/components/ui/pixel-fishing';
-import BugCatcher from '@/components/ui/bug-catcher';
-import HarvestRush from '@/components/ui/harvest-rush';
-import RiverDodge from '@/components/ui/river-dodge';
-import CampfireKeeper from '@/components/ui/campfire-keeper';
+
+const PixelFishing = dynamic(() => import('@/components/ui/pixel-fishing'), {
+  ssr: false,
+  loading: () => <div className="h-full min-h-[360px] w-full rounded-xl bg-black/5" />,
+});
+const BugCatcher = dynamic(() => import('@/components/ui/bug-catcher'), {
+  ssr: false,
+  loading: () => <div className="h-full min-h-[360px] w-full rounded-xl bg-black/5" />,
+});
+const HarvestRush = dynamic(() => import('@/components/ui/harvest-rush'), {
+  ssr: false,
+  loading: () => <div className="h-full min-h-[360px] w-full rounded-xl bg-black/5" />,
+});
+const RiverDodge = dynamic(() => import('@/components/ui/river-dodge'), {
+  ssr: false,
+  loading: () => <div className="h-full min-h-[360px] w-full rounded-xl bg-black/5" />,
+});
+const CampfireKeeper = dynamic(() => import('@/components/ui/campfire-keeper'), {
+  ssr: false,
+  loading: () => <div className="h-full min-h-[360px] w-full rounded-xl bg-black/5" />,
+});
 
 function ArcadeStage({ children }: { children: React.ReactNode }) {
   return (

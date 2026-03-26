@@ -33,6 +33,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Reduce Spline connection + TLS setup time */}
+        <link rel="preconnect" href="https://prod.spline.design" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://prod.spline.design" />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         {children}
       </body>

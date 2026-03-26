@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 function useIsPageVisible() {
@@ -27,7 +27,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-function FloatingPaths({ position }: { position: number }) {
+function FloatingPaths({ position, active }: { position: number; active: boolean }) {
   // Keep this light: fewer paths + stable timings (no Math.random in render).
   const reduceMotion = useReducedMotion();
   const isPageVisible = useIsPageVisible();
@@ -57,7 +57,7 @@ function FloatingPaths({ position }: { position: number }) {
     <div className="absolute inset-0 pointer-events-none">
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none" aria-hidden="true">
         {paths.map((path) =>
-          reduceMotion || !isPageVisible ? (
+          reduceMotion || !isPageVisible || !active ? (
             <path
               key={path.id}
               d={path.d}
@@ -101,11 +101,29 @@ export function BackgroundPathsOverlay({
 }: {
   className?: string;
 }) {
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const [isNearViewport, setIsNearViewport] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry.isIntersecting),
+      { rootMargin: "220px 0px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={cn("absolute inset-0 pointer-events-none overflow-hidden", className)} aria-hidden="true">
+    <div
+      ref={rootRef}
+      className={cn("absolute inset-0 pointer-events-none overflow-hidden", className)}
+      aria-hidden="true"
+    >
       <div className="absolute inset-0">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
+        <FloatingPaths position={1} active={isNearViewport} />
+        <FloatingPaths position={-1} active={isNearViewport} />
       </div>
     </div>
   );
