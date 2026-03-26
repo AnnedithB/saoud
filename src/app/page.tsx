@@ -143,6 +143,8 @@ export default function Home() {
                   <InteractiveRobotSpline
                     scene={ROBOT_SCENE_URL}
                     className="absolute inset-0"
+                    deferUntilInteraction={false}
+                    maxDeferMs={0}
                   />
                   <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/40" />
                 </div>

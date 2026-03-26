@@ -22,8 +22,8 @@ export function InteractiveRobotSpline({
   deferUntilInteraction = true,
   maxDeferMs = 8000,
 }: InteractiveRobotSplineProps) {
-  const [enabled, setEnabled] = useState(false);
-  const [prefetched, setPrefetched] = useState(false);
+  const [enabled, setEnabled] = useState(() => !deferUntilInteraction);
+  const [prefetched, setPrefetched] = useState(() => !deferUntilInteraction);
   const hostRef = useRef<HTMLDivElement | null>(null);
 
   const shouldEnableOnIdle = useMemo(() => !deferUntilInteraction, [deferUntilInteraction]);
@@ -55,7 +55,7 @@ export function InteractiveRobotSpline({
 
     const enable = () => {
       if (cancelled) return;
-      if (!inView) return;
+      if (deferUntilInteraction && !inView) return;
       setEnabled(true);
     };
 
