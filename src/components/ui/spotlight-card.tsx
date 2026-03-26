@@ -38,19 +38,45 @@ const GlowCard: React.FC<GlowCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const syncPointer = (e: PointerEvent) => {
-      const { clientX: x, clientY: y } = e;
+    const el = cardRef.current;
+    if (!el) return;
 
-      if (cardRef.current) {
-        cardRef.current.style.setProperty('--x', x.toFixed(2));
-        cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-        cardRef.current.style.setProperty('--y', y.toFixed(2));
-        cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+    let raf = 0;
+    let lastX = 0;
+    let lastY = 0;
+
+    const flush = () => {
+      raf = 0;
+      // Use viewport for normalized values, but only compute when needed.
+      el.style.setProperty('--x', lastX.toFixed(2));
+      el.style.setProperty('--xp', (lastX / window.innerWidth).toFixed(4));
+      el.style.setProperty('--y', lastY.toFixed(2));
+      el.style.setProperty('--yp', (lastY / window.innerHeight).toFixed(4));
+    };
+
+    const onMove = (e: PointerEvent) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (raf) return;
+      raf = window.requestAnimationFrame(flush);
+    };
+
+    const onLeave = () => {
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
       }
     };
 
-    document.addEventListener('pointermove', syncPointer);
-    return () => document.removeEventListener('pointermove', syncPointer);
+    // Scope listeners to the card only (avoid page-wide main-thread work).
+    el.addEventListener('pointermove', onMove, { passive: true });
+    el.addEventListener('pointerleave', onLeave, { passive: true });
+
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf);
+      el.removeEventListener('pointermove', onMove as EventListener);
+      el.removeEventListener('pointerleave', onLeave as EventListener);
+    };
   }, []);
 
   const { base, spread } = glowColorMap[glowColor];

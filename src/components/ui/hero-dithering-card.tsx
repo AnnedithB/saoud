@@ -42,7 +42,7 @@ export function HeroDitheringBackground({
   speed = 0.12,
   hoverSpeed = 0.35,
   defer = true,
-  disableOnMobile = true,
+  disableOnMobile = false,
 }: HeroDitheringBackgroundProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isReady, setIsReady] = useState(!defer);
@@ -102,7 +102,7 @@ export function HeroDitheringBackground({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-fuchsia-500/10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/25 via-transparent to-fuchsia-500/20" />
       {!prefersReducedMotion && !(disableOnMobile && isMobile) && isReady ? (
         <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
           <div
