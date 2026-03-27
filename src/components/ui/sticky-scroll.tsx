@@ -25,6 +25,7 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
       'kitimat.png',
       'plhh.png',
       'belle.png',
+      'autest.jpeg',
     ] as const
   ).map((file) => {
     const slug = file.replace(/\.[^/.]+$/, '');

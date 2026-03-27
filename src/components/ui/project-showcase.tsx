@@ -6,6 +6,14 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
 
+const ASSET_HOST = "https://sillylittletools.com"
+
+function resolveImageSrc(path: string) {
+  if (!path) return "/file.svg"
+  if (path.startsWith("http://") || path.startsWith("https://")) return path
+  return `${ASSET_HOST}${path}`
+}
+
 interface SkillArea {
   title: string
   description: string
@@ -20,7 +28,7 @@ const skills: SkillArea[] = [
     description: "React.js, Next.js, HTML5, CSS3 — clean UI, component systems, and performance-minded UX.",
     level: "Core",
     link: "#projects",
-    image: "/img/works/topnewsongs.png",
+    image: "/img/projects/topnewsongs.png",
   },
   {
     title: "Backend",
@@ -174,13 +182,14 @@ export function ProjectShowcase() {
           {hoveredSkill ? (
             <Image
               key={hoveredSkill.title}
-              src={hoveredSkill.image || "/placeholder.svg"}
+              src={resolveImageSrc(hoveredSkill.image)}
               alt={hoveredSkill.title}
               fill
               sizes="280px"
               className="object-cover transition-all duration-500 ease-out"
               quality={70}
               fetchPriority="low"
+              unoptimized
             />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
