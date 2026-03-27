@@ -24,6 +24,7 @@ import {
   Mail,
   Server,
 } from 'lucide-react';
+import { ROBOT_SCENE_URL } from '@/lib/hero-assets';
 
 const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
 
@@ -35,8 +36,6 @@ const NAV_ITEMS = [
   { href: '#contact', label: 'Contact' },
 ] as const;
 
-const ROBOT_SCENE_URL = 'https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode';
-
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-black text-foreground">
@@ -47,7 +46,7 @@ export default function Home() {
           opacity={0.35}
           speed={0.12}
           hoverSpeed={0.35}
-          defer
+          defer={false}
           disableOnMobile
         />
         <div className="absolute inset-0 bg-background/45 dark:bg-background/35" />
