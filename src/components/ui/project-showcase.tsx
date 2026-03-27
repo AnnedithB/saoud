@@ -154,7 +154,7 @@ export function ProjectShowcase() {
         <h2 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
           Technical Skills
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
           MERN-focused full stack engineer with a strong interest in backend architecture, performance optimization,
           and reliable cloud systems.
         </p>
@@ -236,7 +236,7 @@ export function ProjectShowcase() {
 
                   <p
                     className={`
-                      text-muted-foreground text-sm mt-1 leading-relaxed
+                      text-muted-foreground text-base md:text-lg mt-1 leading-7 md:leading-8
                       transition-all duration-300 ease-out
                       ${hoveredIndex === index ? "text-foreground/70" : "text-muted-foreground"}
                     `}

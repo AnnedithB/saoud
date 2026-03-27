@@ -78,7 +78,7 @@ body {
 
 @layer utilities {
   .wrapper {
-    @apply mx-auto w-full max-w-6xl px-4 md:px-6;
+    @apply mx-auto w-full max-w-[100rem] px-4 md:px-6;
   }
 
   @media (prefers-reduced-motion: reduce) {

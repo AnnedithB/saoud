@@ -162,8 +162,8 @@ export default function Home() {
         <section id="projects" className="wrapper py-16">
           <div className="space-y-6">
             <Reveal className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">Projects</h2>
-              <p className="max-w-3xl text-muted-foreground">
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Projects</h2>
+              <p className="max-w-3xl text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
                 A few projects that show how I approach architecture, automation, and real-time systems.
               </p>
             </Reveal>
@@ -186,8 +186,8 @@ export default function Home() {
 
         <section id="experience" className="wrapper py-16">
           <Reveal className="space-y-2">
-            <h2 className="text-2xl font-semibold tracking-tight">Experience</h2>
-            <p className="max-w-3xl text-muted-foreground">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Experience</h2>
+            <p className="max-w-3xl text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
               Roles where I’ve shipped features, owned deployments, and improved performance.
             </p>
           </Reveal>
@@ -220,8 +220,8 @@ export default function Home() {
         <section id="arcade" className="wrapper py-16">
           <div className="space-y-6">
             <Reveal className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight">Arcade</h2>
-              <p className="max-w-3xl text-muted-foreground">
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Arcade</h2>
+              <p className="max-w-3xl text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
                 A small game I built for fun. Quick break, then back to shipping.
               </p>
             </Reveal>
@@ -243,10 +243,10 @@ export default function Home() {
             >
               <div className="p-6 md:p-8">
                 <div className="space-y-2">
-                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+                  <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
                     Let’s build something solid.
                   </h2>
-                  <p className="max-w-2xl text-muted-foreground leading-8">
+                  <p className="max-w-2xl text-base md:text-lg text-muted-foreground leading-7 md:leading-8">
                     If you’re hiring or want help shipping a product end-to-end, I’m available for freelance and full-time opportunities.
                   </p>
                 </div>
@@ -277,8 +277,8 @@ export default function Home() {
       </main>
 
       <footer className="bg-black border-t border-border py-10">
-        <div className="wrapper flex flex-col gap-2 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Saoud Ahmed</p>
+        <div className="wrapper flex flex-col gap-2 text-base md:text-lg text-muted-foreground md:flex-row md:items-center md:justify-between">
+          <p className="text-muted-foreground/90">© {new Date().getFullYear()} Saoud Ahmed</p>
           <p className="text-muted-foreground/80">
             Redirect:{" "}
             <a

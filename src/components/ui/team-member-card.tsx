@@ -95,7 +95,7 @@ export default function TeamMemberCard({
               <br />
               <span className="font-normal text-white/95">{lastName}</span>
             </p>
-            <p className="text-sm leading-[1.9] text-white/65">
+            <p className="text-base md:text-lg leading-7 md:leading-8 text-white/65">
               {description}
             </p>
           </div>

@@ -6,75 +6,56 @@ type StickyScrollProps = React.HTMLAttributes<HTMLElement>;
 const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...props }, ref) => {
   const PROJECT_BASE_URL = 'https://sillylittletools.com';
 
-  const tiles = [
-    // Source images are in `saoud/public/img/works/*`
-    {
-      src: '/img/works/topnewsongs.png',
-      alt: 'Topnewsongs Music Website',
-      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
-    },
-    {
-      src: '/img/works/crossroads.png',
-      alt: 'Crossroads Travel Agency',
-      href: `${PROJECT_BASE_URL}/crossroads-travel-agency.html`,
-    },
-    {
-      src: '/img/works/sanlorenzo.png',
-      alt: 'San Lorenzo Investments Firm',
-      href: `${PROJECT_BASE_URL}/san-lorenzo-investments.html`,
-    },
-    {
-      src: '/img/works/dependai.png',
-      alt: 'Depend AI Studio',
-      href: `${PROJECT_BASE_URL}/depend-ai-studio.html`,
-    },
-    {
-      src: '/img/works/justjobs.png',
-      alt: 'Just Jobs Resume Builder',
-      href: `${PROJECT_BASE_URL}/just-jobs-resume-builder.html`,
-    },
-    {
-      src: '/img/works/brandit.png',
-      alt: 'Brandit Lab Advertisement Agency',
-      href: `${PROJECT_BASE_URL}/brandit-lab.html`,
-    },
-    // Repeat to fill 13 tiles (5 + 3 + 5)
-    {
-      src: '/img/works/topnewsongs.png',
-      alt: 'Topnewsongs Music Website',
-      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
-    },
-    {
-      src: '/img/works/crossroads.png',
-      alt: 'Crossroads Travel Agency',
-      href: `${PROJECT_BASE_URL}/crossroads-travel-agency.html`,
-    },
-    {
-      src: '/img/works/sanlorenzo.png',
-      alt: 'San Lorenzo Investments Firm',
-      href: `${PROJECT_BASE_URL}/san-lorenzo-investments.html`,
-    },
-    {
-      src: '/img/works/dependai.png',
-      alt: 'Depend AI Studio',
-      href: `${PROJECT_BASE_URL}/depend-ai-studio.html`,
-    },
-    {
-      src: '/img/works/justjobs.png',
-      alt: 'Just Jobs Resume Builder',
-      href: `${PROJECT_BASE_URL}/just-jobs-resume-builder.html`,
-    },
-    {
-      src: '/img/works/brandit.png',
-      alt: 'Brandit Lab Advertisement Agency',
-      href: `${PROJECT_BASE_URL}/brandit-lab.html`,
-    },
-    {
-      src: '/img/works/topnewsongs.png',
-      alt: 'Topnewsongs Music Website',
-      href: `${PROJECT_BASE_URL}/topnewsongs-music-website.html`,
-    },
-  ] as const;
+  const baseTiles = (
+    [
+      'brandit.png',
+      'crossroads.png',
+      'sanlorenzo.png',
+      'topnewsongs.png',
+      'arli.png',
+      'ink.png',
+      'fileconverter.png',
+      'dependai.png',
+      'sillylittletools.png',
+      'holidayupsell.png',
+      'aegean1.png',
+      'holyghost.png',
+      'futures.png',
+      'justjobs.png',
+      'kitimat.png',
+      'plhh.png',
+      'belle.png',
+    ] as const
+  ).map((file) => {
+    const slug = file.replace(/\.[^/.]+$/, '');
+    const alt = slug.replace(/[-_]+/g, ' ').trim() || 'Project';
+    return {
+      src: `/img/projects/${file}`,
+      alt,
+      href: `${PROJECT_BASE_URL}/${slug}.html`,
+    };
+  });
+
+  const MIN_TILES = 13;
+  const stickyCountTarget = 3;
+  const tilesUnpadded =
+    baseTiles.length >= MIN_TILES
+      ? baseTiles
+      : Array.from({ length: MIN_TILES }, (_, i) => baseTiles[i % baseTiles.length]);
+
+  // Ensure left and right columns have the same count:
+  // after removing the sticky middle tiles, the remainder must be even.
+  const tiles =
+    (tilesUnpadded.length - Math.min(stickyCountTarget, tilesUnpadded.length)) % 2 === 0
+      ? tilesUnpadded
+      : [...tilesUnpadded, tilesUnpadded[0]];
+
+  const stickyCount = Math.min(stickyCountTarget, tiles.length);
+  const remaining = tiles.length - stickyCount;
+  const leftCount = Math.ceil(remaining / 2);
+  const leftTiles = tiles.slice(0, leftCount);
+  const stickyTiles = tiles.slice(leftCount, leftCount + stickyCount);
+  const rightTiles = tiles.slice(leftCount + stickyCount);
 
   function FillImage({
     src,
@@ -122,83 +103,42 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
 
   return (
     <section
-      className={['text-white w-full', className].filter(Boolean).join(' ')}
+      className={['text-white w-[calc(100%+4rem)] -mx-8 max-w-none', className].filter(Boolean).join(' ')}
       ref={ref}
       {...props}
     >
       <div className="grid grid-cols-12 gap-2">
         <div className="grid gap-2 col-span-4">
-          <figure className="w-full h-96">
-            <TileLink href={tiles[0].href}>
-              <FillImage src={tiles[0].src} alt={tiles[0].alt} priority />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[1].href}>
-              <FillImage src={tiles[1].src} alt={tiles[1].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[2].href}>
-              <FillImage src={tiles[2].src} alt={tiles[2].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[3].href}>
-              <FillImage src={tiles[3].src} alt={tiles[3].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[4].href}>
-              <FillImage src={tiles[4].src} alt={tiles[4].alt} />
-            </TileLink>
-          </figure>
+          {leftTiles.map((t, idx) => (
+            <figure key={`${t.src}:${idx}`} className="w-full h-96">
+              <TileLink href={t.href}>
+                <FillImage src={t.src} alt={t.alt} priority={idx === 0} />
+              </TileLink>
+            </figure>
+          ))}
         </div>
 
-        <div className="sticky top-0 h-screen w-full col-span-4 gap-2 grid grid-rows-3">
-          <figure className="w-full h-full">
-            <TileLink href={tiles[5].href}>
-              <FillImage src={tiles[5].src} alt={tiles[5].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-full">
-            <TileLink href={tiles[6].href}>
-              <FillImage src={tiles[6].src} alt={tiles[6].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-full">
-            <TileLink href={tiles[7].href}>
-              <FillImage src={tiles[7].src} alt={tiles[7].alt} />
-            </TileLink>
-          </figure>
+        <div
+          className="sticky top-0 h-screen w-full col-span-4 gap-2 grid"
+          style={{ gridTemplateRows: `repeat(${Math.max(1, stickyTiles.length)}, minmax(0, 1fr))` }}
+        >
+          {stickyTiles.map((t, idx) => (
+            <figure key={`${t.src}:sticky:${idx}`} className="w-full h-full">
+              <TileLink href={t.href}>
+                <FillImage src={t.src} alt={t.alt} />
+              </TileLink>
+            </figure>
+          ))}
         </div>
 
         <div className="grid gap-2 col-span-4">
-          <figure className="w-full h-96">
-            <TileLink href={tiles[8].href}>
-              <FillImage src={tiles[8].src} alt={tiles[8].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[9].href}>
-              <FillImage src={tiles[9].src} alt={tiles[9].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[10].href}>
-              <FillImage src={tiles[10].src} alt={tiles[10].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[11].href}>
-              <FillImage src={tiles[11].src} alt={tiles[11].alt} />
-            </TileLink>
-          </figure>
-          <figure className="w-full h-96">
-            <TileLink href={tiles[12].href}>
-              <FillImage src={tiles[12].src} alt={tiles[12].alt} />
-            </TileLink>
-          </figure>
+          {rightTiles.map((t, idx) => (
+            <figure key={`${t.src}:right:${idx}`} className="w-full h-96">
+              <TileLink href={t.href}>
+                <FillImage src={t.src} alt={t.alt} />
+              </TileLink>
+            </figure>
+          ))}
         </div>
       </div>
     </section>
