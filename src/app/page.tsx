@@ -57,21 +57,21 @@ export default function Home() {
               href="#top"
               className="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <TextScramble text="Saoud Ahmed" className="scale-[0.7] origin-left" />
+              <TextScramble text="Saoud Ahmed" labelClassName="text-sm md:text-base" />
             </a>
 
-            <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+            <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
               {NAV_ITEMS.map(item => {
                 const isExternal = item.href.startsWith('http');
                 return (
                   <a
                     key={item.href}
-                    className="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="shrink-0 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     href={item.href}
                     target={isExternal ? '_blank' : undefined}
                     rel={isExternal ? 'noreferrer' : undefined}
                   >
-                    <TextScramble text={item.label} className="scale-[0.65] origin-left" />
+                    <TextScramble text={item.label} labelClassName="text-xs" />
                   </a>
                 );
               })}
@@ -87,12 +87,12 @@ export default function Home() {
         </header>
 
         <main id="top" className="relative z-10">
-          <section className="min-h-[calc(95vh-3.5rem)] flex items-center justify-center relative">
+          <section className="min-h-screen flex items-center justify-center relative">
             <div className="absolute inset-0 z-0 pointer-events-none bg-background/55 dark:bg-background/40" />
 
             <div className="wrapper relative z-10 grid gap-12 items-center md:grid-cols-12">
               <Reveal className="md:col-span-7 text-center md:text-left space-y-7 md:pr-4">
-                <p className="text-sm text-muted-foreground ui-fade-up">Full Stack Developer</p>
+                <p className="text-base md:text-lg font-medium text-muted-foreground ui-fade-up">Full Stack Developer</p>
                 <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl ui-fade-up">
                   Building reliable web apps with modern backend architecture.
                 </h1>
@@ -197,7 +197,7 @@ export default function Home() {
               jobPosition="Freelancing (Jun 2025 — Present)"
               firstName="Full Stack"
               lastName="Developer"
-              imageUrl="/img/works/dependai.png"
+              imageUrl="/img/experience/sltexp.png"
               description="Led end-to-end MERN development and deployments. Designed secure REST APIs with Node/Express, optimized MongoDB queries (~30% faster responses), shipped admin dashboards with React/Next, and deployed to AWS EC2 with S3 storage."
               className="my-0"
             />
@@ -207,7 +207,7 @@ export default function Home() {
               jobPosition="RubrixCode (Jul 2024 — May 2025)"
               firstName="Full Stack"
               lastName="Developer"
-              imageUrl="/img/works/crossroads.png"
+              imageUrl="/img/experience/dependexp.png"
               description="Built backend services for data-intensive platforms with Node/Express. Designed and optimized schemas across MongoDB and MySQL, and delivered responsive, component-based UIs using React and Next.js."
               className="my-0"
             />

@@ -73,8 +73,7 @@ export default function TeamMemberCard({
             alt={fullName}
             fill
             sizes="(min-width: 768px) 360px, 100vw"
-            className="object-cover duration-500 ease-[0.22,1,0.36,1] hover:scale-105 will-change-transform"
-            // Keep main-thread work low; Next will lazy-load by default when offscreen.
+            className="object-cover"
             priority={false}
           />
         </motion.div>

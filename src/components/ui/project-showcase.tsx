@@ -159,7 +159,7 @@ export function ProjectShowcase() {
       className="relative w-full"
     >
       <div className="space-y-2 mb-8">
-        <h2 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
           Technical Skills
         </h2>
         <p className="text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
@@ -217,7 +217,7 @@ export function ProjectShowcase() {
               <div className="relative flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="inline-flex items-center gap-2">
-                    <h3 className="text-foreground font-medium text-lg tracking-tight">
+                    <h3 className="text-foreground font-semibold text-xl md:text-2xl tracking-tight">
                       <span className="relative">
                         {item.title}
                         <span

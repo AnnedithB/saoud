@@ -16,8 +16,8 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
       'ink.png',
       'fileconverter.png',
       'dependai.png',
-      'sillylittletools.png',
       'holidayupsell.png',
+      'sillylittletools.png',
       'aegean1.png',
       'holyghost.png',
       'futures.png',
@@ -68,13 +68,13 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
     priority?: boolean;
   }) {
     return (
-      <div className="relative w-full h-full overflow-hidden rounded-md">
+      <div className="relative h-full w-full overflow-hidden rounded-lg border-[3px] border-white/20 shadow-md transition-[box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-violet-300/55 group-hover:shadow-[0_28px_56px_-12px_rgba(0,0,0,0.65)]">
         <Image
           src={src}
           alt={alt}
           fill
           sizes="(min-width: 768px) 33vw, 100vw"
-          className="object-cover transition-all duration-300"
+          className="object-cover"
           priority={Boolean(priority)}
           fetchPriority={priority ? 'high' : 'auto'}
           quality={70}
@@ -95,7 +95,7 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
         href={href}
         target="_blank"
         rel="noreferrer"
-        className="block h-full w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md"
+        className="group relative z-0 block h-full w-full cursor-pointer rounded-lg outline-none transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:z-20 hover:-translate-y-2 hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
       >
         {children}
       </a>
@@ -104,14 +104,14 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
 
   return (
     <section
-      className={['text-white w-[calc(100%+4rem)] -mx-8 max-w-none', className].filter(Boolean).join(' ')}
+      className={['text-white w-[calc(100%+4rem)] -mx-8 max-w-none overflow-visible', className].filter(Boolean).join(' ')}
       ref={ref}
       {...props}
     >
-      <div className="grid grid-cols-12 gap-2">
-        <div className="grid gap-2 col-span-4">
+      <div className="grid grid-cols-12 gap-2 overflow-visible">
+        <div className="grid gap-2 col-span-4 overflow-visible">
           {leftTiles.map((t, idx) => (
-            <figure key={`${t.src}:${idx}`} className="w-full h-96">
+            <figure key={`${t.src}:${idx}`} className="relative w-full h-96 overflow-visible">
               <TileLink href={t.href}>
                 <FillImage src={t.src} alt={t.alt} priority={idx === 0} />
               </TileLink>
@@ -120,11 +120,11 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
         </div>
 
         <div
-          className="sticky top-0 h-screen w-full col-span-4 gap-2 grid"
+          className="sticky top-0 h-screen w-full col-span-4 grid gap-2 overflow-visible"
           style={{ gridTemplateRows: `repeat(${Math.max(1, stickyTiles.length)}, minmax(0, 1fr))` }}
         >
           {stickyTiles.map((t, idx) => (
-            <figure key={`${t.src}:sticky:${idx}`} className="w-full h-full">
+            <figure key={`${t.src}:sticky:${idx}`} className="relative w-full min-h-0 h-full overflow-visible">
               <TileLink href={t.href}>
                 <FillImage src={t.src} alt={t.alt} />
               </TileLink>
@@ -132,9 +132,9 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
           ))}
         </div>
 
-        <div className="grid gap-2 col-span-4">
+        <div className="grid gap-2 col-span-4 overflow-visible">
           {rightTiles.map((t, idx) => (
-            <figure key={`${t.src}:right:${idx}`} className="w-full h-96">
+            <figure key={`${t.src}:right:${idx}`} className="relative w-full h-96 overflow-visible">
               <TileLink href={t.href}>
                 <FillImage src={t.src} alt={t.alt} />
               </TileLink>
