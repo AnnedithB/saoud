@@ -31,7 +31,7 @@ const PROJECTS_EXTERNAL_URL = 'https://sillylittletools.com/portfolio-1.html';
 const NAV_ITEMS = [
   { href: '#skills', label: 'Skills' },
   { href: '#experience', label: 'Experience' },
-  { href: PROJECTS_EXTERNAL_URL, label: 'Projects' },
+  { href: '#projects', label: 'Projects' },
   { href: '#arcade', label: 'Arcade' },
   { href: '#contact', label: 'Contact' },
 ] as const;
