@@ -3,37 +3,60 @@ import Image from 'next/image';
 
 type StickyScrollProps = React.HTMLAttributes<HTMLElement>;
 
+const PROJECT_FILES = [
+  'brandit.png',
+  'crossroads.png',
+  'sanlorenzo.png',
+  'topnewsongs.png',
+  'arli.png',
+  'ink.png',
+  'fileconverter.png',
+  'dependai.png',
+  'holidayupsell.png',
+  'sillylittletools.png',
+  'aegean1.png',
+  'holyghost.png',
+  'futures.png',
+  'justjobs.png',
+  'kitimat.png',
+  'plhh.png',
+  'belle.png',
+  'autest.jpeg',
+] as const;
+
+/** Canonical HTML filename on sillylittletools.com (see repo root *.html). */
+const PROJECT_PAGE_HTML: Record<(typeof PROJECT_FILES)[number], string> = {
+  'brandit.png': 'brandit-lab.html',
+  'crossroads.png': 'crossroads-travel-agency.html',
+  'sanlorenzo.png': 'san-lorenzo-investments.html',
+  'topnewsongs.png': 'topnewsongs-music-website.html',
+  'arli.png': 'arli.html',
+  'ink.png': 'ink.html',
+  'fileconverter.png': 'fileconverter.html',
+  'dependai.png': 'depend-ai-studio.html',
+  'holidayupsell.png': 'holidayupsell.html',
+  'sillylittletools.png': 'sillylittletools.html',
+  'aegean1.png': 'aegean1.html',
+  'holyghost.png': 'holyghost.html',
+  'futures.png': 'futures.html',
+  'justjobs.png': 'just-jobs-resume-builder.html',
+  'kitimat.png': 'kitimat.html',
+  'plhh.png': 'plhh.html',
+  'belle.png': 'belle.html',
+  'autest.jpeg': 'autest.html',
+};
+
 const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...props }, ref) => {
   const PROJECT_BASE_URL = 'https://sillylittletools.com';
 
-  const baseTiles = (
-    [
-      'brandit.png',
-      'crossroads.png',
-      'sanlorenzo.png',
-      'topnewsongs.png',
-      'arli.png',
-      'ink.png',
-      'fileconverter.png',
-      'dependai.png',
-      'holidayupsell.png',
-      'sillylittletools.png',
-      'aegean1.png',
-      'holyghost.png',
-      'futures.png',
-      'justjobs.png',
-      'kitimat.png',
-      'plhh.png',
-      'belle.png',
-      'autest.jpeg',
-    ] as const
-  ).map((file) => {
+  const baseTiles = PROJECT_FILES.map(file => {
     const slug = file.replace(/\.[^/.]+$/, '');
     const alt = slug.replace(/[-_]+/g, ' ').trim() || 'Project';
+    const pageHtml = PROJECT_PAGE_HTML[file];
     return {
       src: `/img/projects/${file}`,
       alt,
-      href: `${PROJECT_BASE_URL}/${slug}.html`,
+      href: `${PROJECT_BASE_URL}/${pageHtml}`,
     };
   });
 
