@@ -223,8 +223,8 @@ export default function Home() {
           <div className="wrapper relative z-30 flex flex-col items-center text-center">
             <div className="relative flex flex-col items-center space-y-4 mb-24">
               <motion.div
-                initial={{ opacity: 0, tracking: "1.2em" }}
-                animate={{ opacity: 0.4, tracking: "0.8em" }}
+                initial={{ opacity: 0, letterSpacing: "1.2em" }}
+                animate={{ opacity: 0.4, letterSpacing: "0.8em" }}
                 transition={{ duration: 2, delay: 1 }}
                 className="text-[10px] font-mono font-bold text-white uppercase"
               >
