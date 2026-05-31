@@ -1,0 +1,263 @@
+"use client"
+
+import type React from "react"
+
+import { useEffect, useMemo, useRef, useState } from "react"
+import { ArrowUpRight } from "lucide-react"
+import Image from "next/image"
+
+const ASSET_HOST = "https://sillylittletools.com"
+
+function resolveImageSrc(path: string) {
+  if (!path) return "/file.svg"
+  if (path.startsWith("http://") || path.startsWith("https://")) return path
+  return `${ASSET_HOST}${path}`
+}
+
+interface SkillArea {
+  title: string
+  description: string
+  level: string
+  link: string
+  image: string
+}
+
+const skills: SkillArea[] = [
+  {
+    title: "Full-Stack Architecture",
+    description: "Node.js (ES2024), TypeScript, Python (FastAPI). Architecting 12-service microservices with GraphQL gateways and REST APIs.",
+    level: "Core",
+    link: "#projects",
+    image: "/img/projects/topnewsongs.png",
+  },
+  {
+    title: "Frontend & AI SaaS",
+    description: "Next.js 15, React, Framer Motion. Integrating OpenAI GPT-4o, custom NLP pipelines, and LLM automation workflows.",
+    level: "Expert",
+    link: "#projects",
+    image: "/img/works/dependai.png",
+  },
+  {
+    title: "Infrastructure & Payments",
+    description: "AWS (EC2, S3, SES), Redis, CI/CD. Implementing Stripe Connect, Apple IAP, and automated global money flows.",
+    level: "DevOps",
+    link: "#contact",
+    image: "/img/works/crossroads.png",
+  },
+  {
+    title: "Data Systems",
+    description: "MongoDB, PostgreSQL, MySQL. Optimizing query latency by ~30% through advanced indexing and schema redesign.",
+    level: "Data",
+    link: "#",
+    image: "/img/works/brandit.png",
+  },
+]
+
+export function ProjectShowcase() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number | null>(null)
+  const mouseRef = useRef({ x: 0, y: 0 })
+  const smoothRef = useRef({ x: 0, y: 0 })
+  const rectRef = useRef({ left: 0, top: 0 })
+  const needsRectUpdateRef = useRef(true)
+
+  const lerp = useMemo(() => {
+    return (start: number, end: number, factor: number) => start + (end - start) * factor
+  }, [])
+
+  const updateContainerRect = () => {
+    const container = containerRef.current
+    if (!container) return
+    const rect = container.getBoundingClientRect()
+    rectRef.current = { left: rect.left, top: rect.top }
+    needsRectUpdateRef.current = false
+  }
+
+  const tick = () => {
+    const preview = previewRef.current
+    if (!preview || !isVisible) {
+      rafRef.current = null
+      return
+    }
+
+    const nextX = lerp(smoothRef.current.x, mouseRef.current.x, 0.15)
+    const nextY = lerp(smoothRef.current.y, mouseRef.current.y, 0.15)
+    smoothRef.current = { x: nextX, y: nextY }
+
+    preview.style.transform = `translate3d(${nextX + 20}px, ${nextY - 100}px, 0)`
+
+    const dx = Math.abs(mouseRef.current.x - nextX)
+    const dy = Math.abs(mouseRef.current.y - nextY)
+    if (dx > 0.1 || dy > 0.1) {
+      rafRef.current = requestAnimationFrame(tick)
+    } else {
+      rafRef.current = null
+    }
+  }
+
+  const scheduleTick = () => {
+    if (rafRef.current != null) return
+    rafRef.current = requestAnimationFrame(tick)
+  }
+
+  useEffect(() => {
+    if (!isVisible) return
+    scheduleTick()
+    
+    const handleScrollOrResize = () => {
+      needsRectUpdateRef.current = true
+    }
+
+    window.addEventListener("scroll", handleScrollOrResize, { passive: true })
+    window.addEventListener("resize", handleScrollOrResize)
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize)
+      window.removeEventListener("resize", handleScrollOrResize)
+    }
+  }, [isVisible])
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    mouseRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    }
+    scheduleTick()
+  }
+
+  const handleMouseEnter = (index: number) => {
+    setHoveredIndex(index)
+    setIsVisible(true)
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null)
+    setIsVisible(false)
+  }
+
+  const hoveredSkill = hoveredIndex != null ? skills[hoveredIndex] : null
+
+  return (
+    <section
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative w-full"
+    >
+      <div className="space-y-2 mb-8">
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+          Technical Skills
+        </h2>
+        <p className="text-base md:text-lg leading-7 md:leading-8 text-muted-foreground">
+          MERN-focused full stack engineer with a strong interest in backend architecture, performance optimization,
+          and reliable cloud systems.
+        </p>
+      </div>
+
+      <div
+        ref={previewRef}
+        className="pointer-events-none fixed z-50 overflow-hidden rounded-none shadow-2xl will-change-transform"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          scale: isVisible ? 1 : 0.8,
+          transition:
+            "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), scale 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
+        <div className="relative w-[280px] h-[180px] bg-secondary rounded-none overflow-hidden border border-white/10">
+          {hoveredSkill ? (
+            <Image
+              key={hoveredSkill.title}
+              src={resolveImageSrc(hoveredSkill.image)}
+              alt={hoveredSkill.title}
+              fill
+              sizes="280px"
+              className="object-cover transition-all duration-500 ease-out"
+              quality={70}
+              fetchPriority="low"
+              unoptimized
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
+        </div>
+      </div>
+
+      <div className="space-y-0">
+        {skills.map((item, index) => (
+          <a
+            key={item.title}
+            href={item.link}
+            className="group block"
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="relative py-5 border-t border-border transition-all duration-300 ease-out">
+              <div
+                className={`
+                  absolute inset-0 -mx-4 px-4 bg-secondary/50 rounded-none
+                  transition-all duration-300 ease-out
+                  ${hoveredIndex === index ? "opacity-100 scale-100" : "opacity-0 scale-95"}
+                `}
+              />
+
+              <div className="relative flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-2">
+                    <h3 className="text-foreground font-semibold text-xl md:text-2xl tracking-tight">
+                      <span className="relative">
+                        {item.title}
+                        <span
+                          className={`
+                            absolute left-0 -bottom-0.5 h-px bg-foreground
+                            transition-all duration-300 ease-out
+                            ${hoveredIndex === index ? "w-full" : "w-0"}
+                          `}
+                        />
+                      </span>
+                    </h3>
+
+                    <ArrowUpRight
+                      className={`
+                        w-4 h-4 text-muted-foreground
+                        transition-all duration-300 ease-out
+                        ${
+                          hoveredIndex === index
+                            ? "opacity-100 translate-x-0 translate-y-0"
+                            : "opacity-0 -translate-x-2 translate-y-2"
+                        }
+                      `}
+                    />
+                  </div>
+
+                  <p
+                    className={`
+                      text-muted-foreground text-base md:text-lg mt-1 leading-7 md:leading-8
+                      transition-all duration-300 ease-out
+                      ${hoveredIndex === index ? "text-foreground/70" : "text-muted-foreground"}
+                    `}
+                  >
+                    {item.description}
+                  </p>
+                </div>
+
+                <span
+                  className={`
+                    text-xs font-mono text-muted-foreground tabular-nums
+                    transition-all duration-300 ease-out
+                    ${hoveredIndex === index ? "text-foreground/60" : ""}
+                  `}
+                >
+                  {item.level}
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+
+        <div className="border-t border-border" />
+      </div>
+    </section>
+  )
+}
+
