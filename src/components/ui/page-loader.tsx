@@ -98,21 +98,21 @@ export function PageLoader() {
                 animate={
                   step >= 2
                     ? {
-                        opacity: 0,
-                        scale: 0.05,
-                        x: `${item.tx}%`,
-                        y: `${item.ty}%`,
-                        borderRadius: "50%",
-                        filter: "blur(10px)",
-                      }
+                      opacity: 0,
+                      scale: 0.05,
+                      x: `${item.tx}%`,
+                      y: `${item.ty}%`,
+                      borderRadius: "50%",
+                      filter: "blur(10px)",
+                    }
                     : {
-                        opacity: 0.6,
-                        scale: 1,
-                        x: "0%",
-                        y: "0%",
-                        borderRadius: "0%",
-                        filter: "blur(0px)",
-                      }
+                      opacity: 0.6,
+                      scale: 1,
+                      x: "0%",
+                      y: "0%",
+                      borderRadius: "0%",
+                      filter: "blur(0px)",
+                    }
                 }
                 transition={{
                   delay: step >= 2 ? item.vanishDelay : item.popDelay,
@@ -217,7 +217,7 @@ export function PageLoader() {
                       letterSpacing: "0.65em",
                     }}
                   >
-                    Digital Architect&nbsp;•&nbsp;Portfolio
+                    A Film by an Engineer
                   </motion.p>
                 </motion.div>
               )}
