@@ -1,16 +1,18 @@
 "use client";
 
-import { HeroDitheringBackground } from '@/components/ui/hero-dithering-card';
-import { InteractiveRobotSpline } from '@/components/ui/interactive-3d-robot';
-import StickyScroll from '@/components/ui/sticky-scroll';
-import { GlowCard } from '@/components/ui/spotlight-card';
-import { TextScramble } from '@/components/ui/text-scramble';
-import TeamMemberCard from '@/components/ui/team-member-card';
-import { BackgroundPathsOverlay } from '@/components/ui/background-paths';
-import { Button } from '@/components/ui/button';
-import { Reveal } from '@/components/ui/reveal';
+import dynamic from 'next/dynamic';
 import { PageLoader } from '@/components/ui/page-loader';
 import { ClientArcadeSlider, ClientProjectShowcase } from '@/components/sections/client-only';
+
+const StickyScroll = dynamic(() => import('@/components/ui/sticky-scroll'), { ssr: false });
+const BackgroundPathsOverlay = dynamic(() => import('@/components/ui/background-paths').then(mod => mod.BackgroundPathsOverlay), { ssr: false });
+const TeamMemberCard = dynamic(() => import('@/components/ui/team-member-card'), { ssr: false });
+const GlowCard = dynamic(() => import('@/components/ui/spotlight-card').then(mod => mod.GlowCard), { ssr: false });
+const HeroDitheringBackground = dynamic(() => import('@/components/ui/hero-dithering-card').then(mod => mod.HeroDitheringBackground), { ssr: false });
+const InteractiveRobotSpline = dynamic(() => import('@/components/ui/interactive-3d-robot').then(mod => mod.InteractiveRobotSpline), { ssr: false });
+import { TextScramble } from '@/components/ui/text-scramble';
+import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/ui/reveal';
 import {
   Card,
   CardContent,

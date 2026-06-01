@@ -91,9 +91,9 @@ export function PageLoader() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 1400),          // Title in faster
-      setTimeout(() => setStep(2), 3800),          // Cells explode faster
-      setTimeout(() => setIsVisible(false), 4600), // Reveal hero
+      setTimeout(() => setStep(1), 500),           // Title in much faster
+      setTimeout(() => setStep(2), 1800),          // Cells explode much faster
+      setTimeout(() => setIsVisible(false), 2400), // Reveal hero earlier for better LCP
     ];
     return () => timers.forEach(clearTimeout);
   }, []);

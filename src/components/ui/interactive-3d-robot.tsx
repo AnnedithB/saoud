@@ -91,10 +91,10 @@ export function InteractiveRobotSpline({
     };
   }, [deferUntilInteraction, maxDeferMs, scene, isMobile]);
 
-  // Warm up Spline JS + scene fetch when in view, so interaction doesn't feel "stuck".
   useEffect(() => {
     if (!prefetched || isMobile) return;
-    void import('@splinetool/react-spline');
+    // Removed pre-warm import here as it causes TBT on desktop. 
+    // fetch(scene) below is sufficient for non-blocking pre-fetch.
     try {
       fetch(scene, { cache: 'force-cache' }).catch(() => {});
     } catch {
