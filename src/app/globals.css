@@ -123,6 +123,16 @@ body {
     animation: uiFadeUp 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleInX {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
   .ui-hover-lift {
     transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
