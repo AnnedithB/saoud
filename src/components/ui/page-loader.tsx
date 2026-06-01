@@ -45,7 +45,7 @@ export function PageLoader() {
   }, []);
 
   const COLS = isMobile ? 4 : 6; 
-  const ROWS = isMobile ? 16 : 14;
+  const ROWS = isMobile ? 10 : 8; // Sufficient to cover 100vh with room
   const TOTAL = COLS * ROWS;
 
   const gridItems = useMemo(() => {
@@ -61,27 +61,19 @@ export function PageLoader() {
       let ty = 0;
 
       if (col <= colC && row <= rowC) {
-        // Top Left quadrant -> Go to "Top" (Strictly Up)
-        tx = 0;
-        ty = -200;
+        tx = 0; ty = -200;
       } else if (col > colC && row <= rowC) {
-        // Top Right quadrant -> Go to Top Right
-        tx = 200;
-        ty = -200;
+        tx = 200; ty = -200;
       } else if (col <= colC && row > rowC) {
-        // Bottom Left quadrant -> Go to Bottom Left
-        tx = -200;
-        ty = 200;
+        tx = -200; ty = 200;
       } else if (col > colC && row > rowC) {
-        // Bottom Right quadrant -> Go to Bottom Right
-        tx = 200;
-        ty = 200;
+        tx = 200; ty = 200;
       }
 
       return {
         id: i,
         image: pool[i % pool.length],
-        popDelay: Math.random() * 1.2,
+        popDelay: Math.random() * 0.8, // Faster pop
         vanishDelay: Math.random() * 0.2,
         tx,
         ty,
@@ -91,9 +83,9 @@ export function PageLoader() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 500),           // Title in much faster
-      setTimeout(() => setStep(2), 1800),          // Cells explode much faster
-      setTimeout(() => setIsVisible(false), 2400), // Reveal hero earlier for better LCP
+      setTimeout(() => setStep(1), 400),           // Title in faster
+      setTimeout(() => setStep(2), 1400),          // Cells explode faster
+      setTimeout(() => setIsVisible(false), 2000), // Reveal hero earlier for mobile LCP
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -105,10 +97,10 @@ export function PageLoader() {
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
-            scale: 1.1,
-            filter: "brightness(0)",
+            scale: 1.05,
+            filter: "brightness(2)", // Blow out for faster feel
           }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.6, 1] }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="fixed inset-0 z-[100] bg-black overflow-hidden"
         >
           <div
@@ -116,8 +108,8 @@ export function PageLoader() {
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-              gridAutoRows: `calc((100vw - ${(COLS - 1) * 2}px) / ${COLS})`,
-              gap: "2px",
+              gridAutoRows: `calc(100vh / ${ROWS})`, // Force exact screen height coverage
+              gap: "1px",
               alignContent: "start",
             }}
           >
@@ -133,7 +125,7 @@ export function PageLoader() {
                       x: `${item.tx}%`,
                       y: `${item.ty}%`,
                       borderRadius: "0%",
-                      filter: "blur(10px)",
+                      filter: "blur(20px)",
                     }
                     : {
                       opacity: 0.45,
@@ -146,7 +138,7 @@ export function PageLoader() {
                 }
                 transition={{
                   delay: step >= 2 ? item.vanishDelay : item.popDelay,
-                  duration: step >= 2 ? 0.45 : 0.8,
+                  duration: step >= 2 ? 0.4 : 0.6,
                   ease: step >= 2 ? [0.55, 0.05, 1, 0.5] : [0.23, 1, 0.32, 1],
                 }}
                 className="relative overflow-hidden bg-neutral-900 border-[0.5px] border-white/5"
@@ -156,10 +148,10 @@ export function PageLoader() {
                     src={item.image} 
                     alt="Project" 
                     fill 
-                    sizes="(max-width: 768px) 25vw, 15vw"
+                    sizes="(max-width: 768px) 25vw, 17vw"
                     className="object-cover grayscale hover:grayscale-0 transition-all duration-700" 
                     priority={item.id < 12}
-                    quality={40}
+                    quality={25}
                   />
                 </div>
                 <div className="absolute inset-0 bg-black/40" />
