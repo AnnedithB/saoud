@@ -61,7 +61,7 @@ function Scene({ children, id, className }: { children: React.ReactNode; id?: st
           transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
         }
       }}
-      className={`relative group/scene ${className}`}
+      className={`relative group/scene overflow-hidden ${className}`}
     >
       <div className="relative z-10">
         {children}
@@ -107,7 +107,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 bg-black text-foreground selection:bg-emerald-500/30 selection:text-white">
+    <div className="flex flex-col flex-1 bg-black text-foreground selection:bg-emerald-500/30 selection:text-white overflow-x-hidden">
       <PageLoader />
 
       {/* Global Cinematic Overlays */}

@@ -127,7 +127,7 @@ const Component = forwardRef<HTMLElement, StickyScrollProps>(({ className, ...pr
 
   return (
     <section
-      className={['text-white w-[calc(100%+4rem)] -mx-8 max-w-none overflow-visible', className].filter(Boolean).join(' ')}
+      className={['text-white w-[calc(100%+4rem)] -mx-8 max-w-none overflow-hidden', className].filter(Boolean).join(' ')}
       ref={ref}
       {...props}
     >
