@@ -1,15 +1,26 @@
-"use client";
-
 import { motion, AnimatePresence } from "motion/react";
 import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 
-const VIDEOS = [
-  "https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4",
-  "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-binary-code-data-4340-large.mp4",
-  "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-laptop-4422-large.mp4",
-  "https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-computational-machine-4100-large.mp4",
-  "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-his-laptop-308-large.mp4",
-  "https://assets.mixkit.co/videos/preview/mixkit-keyboard-typing-close-up-hands-and-fingers-4113-large.mp4",
+const PROJECT_IMAGES = [
+  '/img/projects/brandit.png',
+  '/img/projects/crossroads.png',
+  '/img/projects/sanlorenzo.png',
+  '/img/projects/topnewsongs.png',
+  '/img/projects/arli.png',
+  '/img/projects/ink.png',
+  '/img/projects/fileconverter.png',
+  '/img/projects/dependai.png',
+  '/img/projects/holidayupsell.png',
+  '/img/projects/sillylittletools.png',
+  '/img/projects/aegean1.png',
+  '/img/projects/holyghost.png',
+  '/img/projects/futures.png',
+  '/img/projects/justjobs.png',
+  '/img/projects/kitimat.png',
+  '/img/projects/plhh.png',
+  '/img/projects/belle.png',
+  '/img/projects/autest.jpeg',
 ];
 
 function shuffle<T>(arr: T[]): T[] {
@@ -21,46 +32,47 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const COLS = 6; // 6 square columns → rows auto-fit
-const ROWS = 6; // extra rows ensure bottom of screen is covered
-const TOTAL = COLS * ROWS;
-
 export function PageLoader() {
   const [isVisible, setIsVisible] = useState(true);
   const [step, setStep] = useState(0);
-  // step 0: grid pops in
-  // step 1: title appears
-  // step 2: cells explode outward → zoom-punch fade
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const COLS = isMobile ? 4 : 6; 
+  const ROWS = isMobile ? 6 : 6;
+  const TOTAL = COLS * ROWS;
 
   const gridItems = useMemo(() => {
-    const pool = shuffle(VIDEOS);
+    const pool = shuffle(PROJECT_IMAGES);
     return Array.from({ length: TOTAL }).map((_, i) => {
       const col = i % COLS;
       const row = Math.floor(i / COLS);
-      // Normalized direction from grid center for the "explode" scatter
       const colC = (COLS - 1) / 2;
       const rowC = (ROWS - 1) / 2;
       const dx = col === colC ? 0 : (col - colC) / colC;
       const dy = row === rowC ? 0 : (row - rowC) / rowC;
-      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
       return {
         id: i,
-        video: pool[i % pool.length],
-        popDelay: Math.random() * 1.5,
-        vanishDelay: Math.random() * 0.28,
-        // scatter: pixels to fly in explode direction
+        image: pool[i % pool.length],
+        popDelay: Math.random() * 1.2,
+        vanishDelay: Math.random() * 0.2,
         tx: dx * 160,
         ty: dy * 160,
-        angle,
       };
     });
-  }, []);
+  }, [TOTAL, COLS, ROWS]);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 1800),          // Title in
-      setTimeout(() => setStep(2), 4400),          // Cells explode
-      setTimeout(() => setIsVisible(false), 5400), // Zoom-punch fade done → reveal hero
+      setTimeout(() => setStep(1), 1400),          // Title in faster
+      setTimeout(() => setStep(2), 3800),          // Cells explode faster
+      setTimeout(() => setIsVisible(false), 4600), // Reveal hero
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -72,29 +84,26 @@ export function PageLoader() {
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
-            scale: 1.14,
+            scale: 1.1,
             filter: "brightness(0)",
           }}
-          transition={{ duration: 0.9, ease: [0.4, 0, 0.6, 1] }}
+          transition={{ duration: 0.6, ease: [0.4, 0, 0.6, 1] }}
           className="fixed inset-0 z-[100] bg-black overflow-hidden"
         >
-          {/* ── Square video grid ──────────────────────────────── */}
-          {/* gridAutoRows = same as column width → perfect squares */}
           <div
             className="absolute inset-0"
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-              gridAutoRows: `calc((100vw - ${(COLS - 1) * 3}px) / ${COLS})`,
-              gap: "3px",
-              // Align from top so bottom overflow is clipped, not top
+              gridAutoRows: `calc((100vw - ${(COLS - 1) * 2}px) / ${COLS})`,
+              gap: "2px",
               alignContent: "start",
             }}
           >
             {gridItems.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.55, borderRadius: "50%" }}
+                initial={{ opacity: 0, scale: 0.8, borderRadius: "50%" }}
                 animate={
                   step >= 2
                     ? {
@@ -106,7 +115,7 @@ export function PageLoader() {
                       filter: "blur(10px)",
                     }
                     : {
-                      opacity: 0.6,
+                      opacity: 0.45,
                       scale: 1,
                       x: "0%",
                       y: "0%",
@@ -116,61 +125,49 @@ export function PageLoader() {
                 }
                 transition={{
                   delay: step >= 2 ? item.vanishDelay : item.popDelay,
-                  duration: step >= 2 ? 0.55 : 1.0,
-                  ease:
-                    step >= 2
-                      ? [0.55, 0.05, 1, 0.5]
-                      : [0.23, 1, 0.32, 1],
+                  duration: step >= 2 ? 0.45 : 0.8,
+                  ease: step >= 2 ? [0.55, 0.05, 1, 0.5] : [0.23, 1, 0.32, 1],
                 }}
-                className="relative overflow-hidden bg-neutral-900"
+                className="relative overflow-hidden bg-neutral-900 border-[0.5px] border-white/5"
               >
-                <video
-                  src={item.video}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                {/* subtle per-cell dark tint so grid lines read */}
-                <div className="absolute inset-0 bg-black/30" />
+                <div className="absolute inset-0">
+                  <Image 
+                    src={item.image} 
+                    alt="Project" 
+                    fill 
+                    sizes="(max-width: 768px) 25vw, 15vw"
+                    className="object-cover grayscale hover:grayscale-0 transition-all duration-700" 
+                    priority={item.id < 12}
+                    quality={40}
+                  />
+                </div>
+                <div className="absolute inset-0 bg-black/40" />
               </motion.div>
             ))}
           </div>
 
-          {/* Radial vignette — darkens edges, highlights center for title */}
           <div
             className="absolute inset-0 pointer-events-none z-10"
             style={{
-              background:
-                "radial-gradient(ellipse 52% 48% at 50% 50%, transparent 0%, rgba(0,0,0,0.93) 100%)",
+              background: "radial-gradient(ellipse 52% 48% at 50% 50%, transparent 0%, rgba(0,0,0,0.95) 100%)",
             }}
           />
 
-          {/* Film grain */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.04] z-10 contrast-150 grayscale mix-blend-overlay bg-[url('https://grain-y.com/grain.png')] bg-repeat" />
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 contrast-150 grayscale mix-blend-overlay bg-[url('https://grain-y.com/grain.png')] bg-repeat" />
 
-          {/* Letterbox bars */}
           <motion.div
             initial={{ height: "40vh" }}
             animate={{ height: step >= 2 ? "0vh" : "12vh" }}
-            transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
-            className="absolute top-0 inset-x-0 bg-black z-20 border-b border-white/10"
+            transition={{ duration: 1.0, ease: [0.65, 0, 0.35, 1] }}
+            className="absolute top-0 inset-x-0 bg-black z-20 border-b border-white/5"
           />
           <motion.div
             initial={{ height: "40vh" }}
             animate={{ height: step >= 2 ? "0vh" : "12vh" }}
-            transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1] }}
-            className="absolute bottom-0 inset-x-0 bg-black z-20 border-t border-white/10"
+            transition={{ duration: 1.0, ease: [0.65, 0, 0.35, 1] }}
+            className="absolute bottom-0 inset-x-0 bg-black z-20 border-t border-white/5"
           />
 
-          {/* HUD labels */}
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Stream • Active</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Buffer: 100%</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">SA Portfolio — 2026</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">REF: SA-01</motion.span>
-
-          {/* Center title — fluid font size so it fits on any screen */}
           <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
             <AnimatePresence>
               {step >= 1 && (
@@ -181,18 +178,16 @@ export function PageLoader() {
                     opacity: step >= 2 ? 0 : 1,
                     y: step >= 2 ? -10 : 0,
                     filter: step >= 2 ? "blur(20px)" : "blur(0px)",
-                    scale: step >= 2 ? 1.1 : 1,
+                    scale: step >= 2 ? 1.05 : 1,
                   }}
-                  transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                   className="flex flex-col items-center text-center px-4 w-full"
                 >
-                  {/* clamp ensures name fills ~80% of viewport width */}
                   <h1
                     className="font-extralight text-white uppercase italic leading-none drop-shadow-2xl"
                     style={{
-                      fontSize: "clamp(2.8rem, 9.5vw, 9rem)",
-                      letterSpacing: "0.22em",
-                      // letterSpacing eats into available width — compensate
+                      fontSize: "clamp(2.4rem, 9vw, 8rem)",
+                      letterSpacing: "0.25em",
                       maxWidth: "90vw",
                     }}
                   >
@@ -202,19 +197,19 @@ export function PageLoader() {
                   <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.6, duration: 1.3, ease: [0.23, 1, 0.32, 1] }}
-                    className="h-px bg-white/50 mt-6 origin-left"
-                    style={{ width: "clamp(70px, 10vw, 130px)" }}
+                    transition={{ delay: 0.5, duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
+                    className="h-px bg-white/40 mt-6 origin-left"
+                    style={{ width: "clamp(60px, 8vw, 120px)" }}
                   />
 
                   <motion.p
                     initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 0.55, y: 0 }}
-                    transition={{ delay: 1.0, duration: 1.1 }}
+                    animate={{ opacity: 0.45, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.9 }}
                     className="mt-4 text-white font-medium uppercase"
                     style={{
-                      fontSize: "clamp(8px, 1.1vw, 12px)",
-                      letterSpacing: "0.65em",
+                      fontSize: "clamp(8px, 1vw, 11px)",
+                      letterSpacing: "0.7em",
                     }}
                   >
                     A Film by an Engineer
@@ -223,8 +218,6 @@ export function PageLoader() {
               )}
             </AnimatePresence>
           </div>
-
-
         </motion.div>
       )}
     </AnimatePresence>

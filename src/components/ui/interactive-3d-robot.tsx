@@ -20,15 +20,23 @@ export function InteractiveRobotSpline({
   scene,
   className,
   deferUntilInteraction = true,
-  maxDeferMs = 8000,
+  maxDeferMs = 0, // Default to 0 (disabled) to prevent automatic TBT spike
 }: InteractiveRobotSplineProps) {
-  const [enabled, setEnabled] = useState(() => !deferUntilInteraction);
-  const [prefetched, setPrefetched] = useState(() => !deferUntilInteraction);
+  const [enabled, setEnabled] = useState(false);
+  const [prefetched, setPrefetched] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const hostRef = useRef<HTMLDivElement | null>(null);
 
-  const shouldEnableOnIdle = useMemo(() => !deferUntilInteraction, [deferUntilInteraction]);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
+    if (isMobile) return; // Never load Spline on mobile
+
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (media.matches) return;
 
@@ -55,6 +63,7 @@ export function InteractiveRobotSpline({
 
     const enable = () => {
       if (cancelled) return;
+      // On desktop, we still respect deferUntilInteraction but we don't force it with a timeout anymore
       if (deferUntilInteraction && !inView) return;
       setEnabled(true);
     };
@@ -68,53 +77,39 @@ export function InteractiveRobotSpline({
       }
     }
 
-    const idleId =
-      shouldEnableOnIdle
-        ? (anyWindow.requestIdleCallback?.(enable, { timeout: 2500 }) ??
-          window.setTimeout(enable, 1200))
-        : null;
-
+    // Only set a timeout if explicitly requested and > 0
     const timeoutId =
       maxDeferMs > 0 ? window.setTimeout(enable, maxDeferMs) : null;
 
     return () => {
       cancelled = true;
       observer?.disconnect();
-      if (idleId != null && typeof idleId === 'number') {
-        anyWindow.cancelIdleCallback?.(idleId);
-        window.clearTimeout(idleId);
-      }
       if (timeoutId != null) window.clearTimeout(timeoutId);
       for (const evt of interactEvents) {
         window.removeEventListener(evt, onInteract as EventListener);
       }
     };
-  }, [deferUntilInteraction, maxDeferMs, scene, shouldEnableOnIdle]);
+  }, [deferUntilInteraction, maxDeferMs, scene, isMobile]);
 
   // Warm up Spline JS + scene fetch when in view, so interaction doesn't feel "stuck".
   useEffect(() => {
-    if (!prefetched) return;
+    if (!prefetched || isMobile) return;
     void import('@splinetool/react-spline');
-    // Best-effort scene prefetch; doesn't block render.
     try {
       fetch(scene, { cache: 'force-cache' }).catch(() => {});
     } catch {
       // ignore
     }
-  }, [prefetched, scene]);
+  }, [prefetched, scene, isMobile]);
 
-  useEffect(() => {
-    if (!enabled) return;
-    void import('@splinetool/react-spline');
-  }, [enabled, scene]);
-
-  if (!enabled) {
+  if (isMobile || !enabled) {
     return (
       <div
         ref={hostRef}
-        className={`w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/5 ${className ?? ''}`}
+        className={`w-full h-full flex items-center justify-center bg-black/10 transition-opacity duration-1000 ${className ?? ''}`}
       >
-        <div className="h-full w-full bg-gradient-to-b from-transparent via-transparent to-background/30" />
+        {/* Mobile static fallback or simple gradient */}
+        <div className="h-full w-full bg-gradient-to-br from-purple-900/20 via-black to-black opacity-60" />
       </div>
     );
   }
@@ -124,30 +119,9 @@ export function InteractiveRobotSpline({
       fallback={
         <div
           ref={hostRef}
-          className={`w-full h-full flex items-center justify-center bg-gray-900 text-white ${className ?? ''}`}
+          className={`w-full h-full flex items-center justify-center bg-transparent ${className ?? ''}`}
         >
-          <svg
-            className="animate-spin h-5 w-5 text-white mr-3"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l2-2.647z"
-            ></path>
-          </svg>
-          Loading 3D…
+          <div className="h-full w-full bg-gradient-to-br from-purple-900/10 via-black to-black opacity-40" />
         </div>
       }
     >

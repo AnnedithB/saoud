@@ -122,8 +122,8 @@ export default function Home() {
           opacity={0.3}
           speed={0.1}
           hoverSpeed={0.25}
-          defer={false}
-          disableOnMobile={false}
+          defer={true}
+          disableOnMobile={true}
         />
         <div className="absolute inset-0 bg-black/60 dark:bg-black/40" />
 
@@ -279,7 +279,6 @@ export default function Home() {
                 scene={ROBOT_SCENE_URL}
                 className="size-full"
                 deferUntilInteraction={true}
-                maxDeferMs={8000}
               />
             </motion.div>
 
