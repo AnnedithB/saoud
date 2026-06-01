@@ -45,7 +45,7 @@ export function PageLoader() {
   }, []);
 
   const COLS = isMobile ? 4 : 6; 
-  const ROWS = isMobile ? 6 : 6;
+  const ROWS = isMobile ? 16 : 14;
   const TOTAL = COLS * ROWS;
 
   const gridItems = useMemo(() => {
@@ -55,15 +55,36 @@ export function PageLoader() {
       const row = Math.floor(i / COLS);
       const colC = (COLS - 1) / 2;
       const rowC = (ROWS - 1) / 2;
-      const dx = col === colC ? 0 : (col - colC) / colC;
-      const dy = row === rowC ? 0 : (row - rowC) / rowC;
+      
+      // Target directions requested by user
+      let tx = 0;
+      let ty = 0;
+
+      if (col <= colC && row <= rowC) {
+        // Top Left quadrant -> Go to "Top" (Strictly Up)
+        tx = 0;
+        ty = -200;
+      } else if (col > colC && row <= rowC) {
+        // Top Right quadrant -> Go to Top Right
+        tx = 200;
+        ty = -200;
+      } else if (col <= colC && row > rowC) {
+        // Bottom Left quadrant -> Go to Bottom Left
+        tx = -200;
+        ty = 200;
+      } else if (col > colC && row > rowC) {
+        // Bottom Right quadrant -> Go to Bottom Right
+        tx = 200;
+        ty = 200;
+      }
+
       return {
         id: i,
         image: pool[i % pool.length],
         popDelay: Math.random() * 1.2,
         vanishDelay: Math.random() * 0.2,
-        tx: dx * 160,
-        ty: dy * 160,
+        tx,
+        ty,
       };
     });
   }, [TOTAL, COLS, ROWS]);
@@ -103,7 +124,7 @@ export function PageLoader() {
             {gridItems.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.8, borderRadius: "50%" }}
+                initial={{ opacity: 0, scale: 0.8, borderRadius: "0%" }}
                 animate={
                   step >= 2
                     ? {
@@ -111,7 +132,7 @@ export function PageLoader() {
                       scale: 0.05,
                       x: `${item.tx}%`,
                       y: `${item.ty}%`,
-                      borderRadius: "50%",
+                      borderRadius: "0%",
                       filter: "blur(10px)",
                     }
                     : {
@@ -155,18 +176,11 @@ export function PageLoader() {
 
           <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 contrast-150 grayscale mix-blend-overlay bg-[url('https://grain-y.com/grain.png')] bg-repeat" />
 
-          <motion.div
-            initial={{ height: "40vh" }}
-            animate={{ height: step >= 2 ? "0vh" : "12vh" }}
-            transition={{ duration: 1.0, ease: [0.65, 0, 0.35, 1] }}
-            className="absolute top-0 inset-x-0 bg-black z-20 border-b border-white/5"
-          />
-          <motion.div
-            initial={{ height: "40vh" }}
-            animate={{ height: step >= 2 ? "0vh" : "12vh" }}
-            transition={{ duration: 1.0, ease: [0.65, 0, 0.35, 1] }}
-            className="absolute bottom-0 inset-x-0 bg-black z-20 border-t border-white/5"
-          />
+          {/* HUD labels */}
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Stream • Active</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Buffer: 100%</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">SA Portfolio — 2026</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">REF: SA-01</motion.span>
 
           <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
             <AnimatePresence>
