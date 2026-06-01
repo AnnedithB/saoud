@@ -44,8 +44,8 @@ export function PageLoader() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const COLS = isMobile ? 4 : 6; 
-  const ROWS = isMobile ? 10 : 8; // Sufficient to cover 100vh with room
+  const COLS = isMobile ? 3 : 6; 
+  const ROWS = isMobile ? 8 : 8;
   const TOTAL = COLS * ROWS;
 
   const gridItems = useMemo(() => {
@@ -56,7 +56,6 @@ export function PageLoader() {
       const colC = (COLS - 1) / 2;
       const rowC = (ROWS - 1) / 2;
       
-      // Target directions requested by user
       let tx = 0;
       let ty = 0;
 
@@ -73,8 +72,8 @@ export function PageLoader() {
       return {
         id: i,
         image: pool[i % pool.length],
-        popDelay: Math.random() * 0.8, // Faster pop
-        vanishDelay: Math.random() * 0.2,
+        popDelay: Math.random() * 0.6,
+        vanishDelay: Math.random() * 0.15,
         tx,
         ty,
       };
@@ -82,11 +81,11 @@ export function PageLoader() {
   }, [TOTAL, COLS, ROWS]);
 
   useEffect(() => {
-    const isMobileDevice = window.innerWidth < 768;
+    const mob = window.innerWidth < 768;
     const timers = [
-      setTimeout(() => setStep(1), isMobileDevice ? 800 : 500),           
-      setTimeout(() => setStep(2), isMobileDevice ? 3200 : 1800),          
-      setTimeout(() => setIsVisible(false), isMobileDevice ? 4000 : 2500), 
+      setTimeout(() => setStep(1), mob ? 600 : 500),           
+      setTimeout(() => setStep(2), mob ? 3400 : 1800),          
+      setTimeout(() => setIsVisible(false), mob ? 4200 : 2500), 
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -99,7 +98,7 @@ export function PageLoader() {
           exit={{
             opacity: 0,
             scale: 1.05,
-            filter: "brightness(2)", // Blow out for faster feel
+            filter: "brightness(2)",
           }}
           transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="fixed inset-0 z-[100] bg-black overflow-hidden"
@@ -109,7 +108,7 @@ export function PageLoader() {
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-              gridAutoRows: `calc(100vh / ${ROWS})`, // Force exact screen height coverage
+              gridAutoRows: `calc(100vh / ${ROWS})`,
               gap: "1px",
               alignContent: "start",
             }}
@@ -117,7 +116,7 @@ export function PageLoader() {
             {gridItems.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.8, borderRadius: "0%" }}
+                initial={{ opacity: 0, scale: 0.85 }}
                 animate={
                   step >= 2
                     ? {
@@ -125,7 +124,6 @@ export function PageLoader() {
                       scale: 0.05,
                       x: `${item.tx}%`,
                       y: `${item.ty}%`,
-                      borderRadius: "0%",
                       filter: "blur(20px)",
                     }
                     : {
@@ -133,28 +131,35 @@ export function PageLoader() {
                       scale: 1,
                       x: "0%",
                       y: "0%",
-                      borderRadius: "0%",
                       filter: "blur(0px)",
                     }
                 }
                 transition={{
                   delay: step >= 2 ? item.vanishDelay : item.popDelay,
-                  duration: step >= 2 ? 0.4 : 0.6,
+                  duration: step >= 2 ? 0.4 : 0.5,
                   ease: step >= 2 ? [0.55, 0.05, 1, 0.5] : [0.23, 1, 0.32, 1],
                 }}
                 className="relative overflow-hidden bg-neutral-900 border-[0.5px] border-white/5"
               >
-                <div className="absolute inset-0">
-                  <Image 
-                    src={item.image} 
-                    alt="Project" 
-                    fill 
-                    sizes="(max-width: 768px) 25vw, 17vw"
-                    className="object-cover grayscale hover:grayscale-0 transition-all duration-700" 
-                    priority={item.id < 12}
-                    quality={25}
+                {/* On mobile: lightweight CSS bg-image to avoid decode lag. On desktop: next/image for quality */}
+                {isMobile ? (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center grayscale"
+                    style={{ backgroundImage: `url(${item.image})` }}
                   />
-                </div>
+                ) : (
+                  <div className="absolute inset-0">
+                    <Image 
+                      src={item.image} 
+                      alt="Project" 
+                      fill 
+                      sizes="17vw"
+                      className="object-cover grayscale" 
+                      priority={item.id < 12}
+                      quality={25}
+                    />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/40" />
               </motion.div>
             ))}
@@ -169,11 +174,11 @@ export function PageLoader() {
 
           <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 contrast-150 grayscale mix-blend-overlay bg-[url('https://grain-y.com/grain.png')] bg-repeat" />
 
-          {/* HUD labels */}
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Stream • Active</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">Buffer: 100%</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 left-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">SA Portfolio — 2026</motion.span>
-          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-7 right-7 z-30 text-[10px] font-mono tracking-[0.4em] text-white uppercase">REF: SA-01</motion.span>
+          {/* HUD labels — smaller and tighter on mobile */}
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-5 left-5 md:top-7 md:left-7 z-30 text-[8px] md:text-[10px] font-mono tracking-[0.3em] md:tracking-[0.4em] text-white uppercase">Stream • Active</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute top-5 right-5 md:top-7 md:right-7 z-30 text-[8px] md:text-[10px] font-mono tracking-[0.3em] md:tracking-[0.4em] text-white uppercase">Buffer: 100%</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-5 left-5 md:bottom-7 md:left-7 z-30 text-[8px] md:text-[10px] font-mono tracking-[0.3em] md:tracking-[0.4em] text-white uppercase">SA Portfolio — 2026</motion.span>
+          <motion.span animate={{ opacity: step >= 2 ? 0 : 0.45 }} transition={{ duration: 0.4 }} className="absolute bottom-5 right-5 md:bottom-7 md:right-7 z-30 text-[8px] md:text-[10px] font-mono tracking-[0.3em] md:tracking-[0.4em] text-white uppercase">REF: SA-01</motion.span>
 
           <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
             <AnimatePresence>
@@ -187,36 +192,38 @@ export function PageLoader() {
                     filter: step >= 2 ? "blur(20px)" : "blur(0px)",
                     scale: step >= 2 ? 1.05 : 1,
                   }}
-                  transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex flex-col items-center text-center px-4 w-full"
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex flex-col items-center text-center px-6 w-full"
                 >
                   <h1
-                    className="font-extralight text-white uppercase italic leading-none drop-shadow-2xl"
+                    className="font-extralight text-white uppercase italic leading-[0.95] drop-shadow-2xl"
                     style={{
-                      fontSize: "clamp(2.4rem, 9vw, 8rem)",
-                      letterSpacing: "0.25em",
+                      fontSize: "clamp(2rem, 12vw, 8rem)",
+                      letterSpacing: "0.15em",
                       maxWidth: "90vw",
                     }}
                   >
-                    Saoud&nbsp;Ahmed
+                    {/* Stack on mobile, inline on desktop */}
+                    <span className="block md:inline">Saoud</span>
+                    <span className="block md:inline md:before:content-['\00a0']">Ahmed</span>
                   </h1>
 
                   <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.5, duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
-                    className="h-px bg-white/40 mt-6 origin-left"
-                    style={{ width: "clamp(60px, 8vw, 120px)" }}
+                    transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                    className="h-px bg-white/40 mt-4 md:mt-6 origin-left"
+                    style={{ width: "clamp(40px, 8vw, 120px)" }}
                   />
 
                   <motion.p
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 0.45, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.9 }}
-                    className="mt-4 text-white font-medium uppercase"
+                    transition={{ delay: 0.5, duration: 0.7 }}
+                    className="mt-3 md:mt-4 text-white font-medium uppercase"
                     style={{
-                      fontSize: "clamp(8px, 1vw, 11px)",
-                      letterSpacing: "0.7em",
+                      fontSize: "clamp(7px, 1.2vw, 11px)",
+                      letterSpacing: "0.5em",
                     }}
                   >
                     A Film by an Engineer
