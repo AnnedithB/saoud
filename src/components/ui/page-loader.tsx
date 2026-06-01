@@ -82,10 +82,11 @@ export function PageLoader() {
   }, [TOTAL, COLS, ROWS]);
 
   useEffect(() => {
+    const isMobileDevice = window.innerWidth < 768;
     const timers = [
-      setTimeout(() => setStep(1), 400),           // Title in faster
-      setTimeout(() => setStep(2), 1400),          // Cells explode faster
-      setTimeout(() => setIsVisible(false), 2000), // Reveal hero earlier for mobile LCP
+      setTimeout(() => setStep(1), isMobileDevice ? 800 : 500),           
+      setTimeout(() => setStep(2), isMobileDevice ? 3200 : 1800),          
+      setTimeout(() => setIsVisible(false), isMobileDevice ? 4000 : 2500), 
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
